@@ -1,0 +1,36 @@
+{
+  "title": "My weekend",
+  "lang": "english",
+  "level": "A1",
+  "source_kind": "text",
+  "refined_text": "Hi! My name is Sam. I am twelve, and I live in a small town with my mum, my dad and my sister Lily.\n\nOn Saturday I usually get up at nine. I have breakfast with my family in the kitchen. Then I play football with my friends in the park. Our team is not very good, but we always have fun.\n\nIn the afternoon I help my dad in the garden or go shopping with my mum. Lily likes music, so she plays the guitar in her room.\n\nOn Sunday we visit my granny. She lives near the river. She makes a big apple pie, and we eat it together. In the evening I read a book or watch a film. I go to bed at ten because on Monday I have school.\n\nMy favourite day is Saturday because I can play football all morning.",
+  "frank_text": "Привет! Меня зовут Сэм. Мне двенадцать лет, я живу в маленьком городе с мамой, папой и сестрой Лили.\n\nВ субботу я обычно встаю в девять. Я завтракаю с семьёй на кухне. Потом я играю в футбол с друзьями в парке. Наша команда не очень сильная, но нам всегда весело.\n\nДнём я помогаю папе в саду или хожу с мамой за покупками. Лили любит музыку, поэтому она играет на гитаре в своей комнате.\n\nВ воскресенье мы ездим к бабушке. Она живёт у реки. Она печёт большой яблочный пирог, и мы едим его вместе. Вечером я читаю книгу или смотрю фильм. Я ложусь спать в десять, потому что в понедельник у меня школа.\n\nМой любимый день — суббота, потому что я могу всё утро играть в футбол.",
+  "lexicon": [
+    {"phrase": "get up", "translation": "вставать (с кровати)", "origin": "teacher"},
+    {"phrase": "have breakfast", "translation": "завтракать", "origin": "teacher"},
+    {"phrase": "play football", "translation": "играть в футбол", "origin": "teacher"},
+    {"phrase": "go shopping", "translation": "ходить за покупками", "origin": "teacher"},
+    {"phrase": "visit my granny", "translation": "навещать бабушку", "origin": "teacher"},
+    {"phrase": "my favourite day", "translation": "мой любимый день", "origin": "teacher"}
+  ],
+  "objectives": [
+    {"text": "Рассказать, что ты обычно делаешь в выходные"},
+    {"text": "Назвать свой любимый день недели и объяснить почему"}
+  ],
+  "avatar": {
+    "saved": true,
+    "role_prompt": "Ты дружелюбный новый одноклассник из Англии. Тебе интересно, как проходят выходные у ученика.",
+    "max_turns": 6,
+    "practice_phrases": ["get up", "have breakfast", "play football", "my favourite day"],
+    "practice_phrase_notes": [
+      "Во сколько ученик встаёт в субботу",
+      "С кем и где ученик завтракает",
+      "Чем ученик занимается с друзьями",
+      "Какой день ученик любит больше всего"
+    ],
+    "practice_grammar": ["Present Simple с usually и always"],
+    "practice_grammar_notes": ["Ученик рассказывает о привычках: I usually…, We always…"],
+    "hint_enabled": true,
+    "dictionary_enabled": true
+  }
+}

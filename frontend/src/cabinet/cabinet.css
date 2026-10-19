@@ -1,0 +1,850 @@
+/* ============================================================
+   cabinet.css — дизайн-система кабинета учителя.
+
+   Файл перенесён из «Финального прототипа» без правок оформления:
+   токены, отступы и типографика — визуальный эталон, спорить с ним
+   в коде нельзя. Менялось ровно одно: правила, которые в прототипе
+   висели на body, a, table и #app, заскоупены под .nr.
+
+   Причина скоупа: рядом в том же приложении живут старые экраны
+   прохождения урока на Tailwind. Глобальный body{font-family}
+   из прототипа перекрасил бы их все.
+
+   Всё, что начинается с .nr — только новый контур. Правки дизайна
+   идут сюда, а не в JSX: разметка описывает структуру, а не вид.
+   ============================================================ */
+
+/* ============================================================
+   На родном. Татарча — кликабельный прототип кабинета учителя
+   Токены сняты с canvas/*.dc.html (артборды = визуальный эталон)
+   ============================================================ */
+
+:root{
+  --bg:#FDFDFB;
+  --panel:#F5EFE6;
+  --card-bg:rgba(245,239,230,.35);
+  --ink:#1F2933;
+  --ink-70:rgba(31,41,51,.72);
+  --ink-60:rgba(31,41,51,.6);
+  --ink-50:rgba(31,41,51,.5);
+  --ink-45:rgba(31,41,51,.45);
+  /* Акцент продукта. Имя историческое: у татарского он зелёный, у
+     английского — красный (переопределение ниже). */
+  --green:#1F7A4D;
+  --green-dark:#186139;
+  --green-08:rgba(31,122,77,.08);
+  --green-line:rgba(31,122,77,.1);
+  --green-28:rgba(31,122,77,.28);
+  --accent-rgb:31,122,77;
+  --tan:rgba(217,195,163,.6);
+  --hair:rgba(31,41,51,.08);
+  --gold:#D4A755;
+  --warn:#8a6a25;
+  --warn-bg:rgba(217,164,6,.08);
+  --warn-line:rgba(217,164,6,.35);
+  --err:#a33a2b;
+  --err-bg:rgba(163,58,43,.06);
+  --err-line:rgba(163,58,43,.25);
+  /* «Верно», «зачтено», высокий балл — зелёные при любом акценте: красный
+     верный ответ читался бы как ошибка. */
+  --ok:#1F7A4D;
+  --ok-dark:#186139;
+  --ok-08:rgba(31,122,77,.08);
+  --ok-rgb:31,122,77;
+  /* Высота кнопок, иконок и полей — одна на весь кабинет. */
+  --ctl-h:38px;
+  --sidebar-w:260px;
+  --header-h:65px;
+}
+
+/* Английский: красный акцент, остальные правила дизайн-системы те же. */
+html[data-lesson-language='english']{
+  --green:#B21E3C;
+  --green-dark:#8E1830;
+  --green-08:rgba(178,30,60,.08);
+  --green-line:rgba(178,30,60,.1);
+  --green-28:rgba(178,30,60,.28);
+  --accent-rgb:178,30,60;
+}
+
+.nr *{box-sizing:border-box}
+
+.nr{
+  font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg); color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+.nr img{max-width:100%}
+/* Сброс через :where — у него нулевой вес, и он не перебивает цвет варианта
+   кнопки. Пока здесь стоял «.nr button», селектор весил больше, чем
+   «.btn-primary», и color:inherit выигрывал: весь текст на зелёном оказывался
+   чернильным (контраст 2,77 вместо 4,5). Кнопки-ссылки при этом оставались
+   белыми — «a.btn-primary» весит столько же, сколько «.nr a», — и одна и та же
+   зелёная кнопка выглядела по-разному на соседних экранах. Тем же весом
+   гасились красный «Удалить» и серые иконочные кнопки. */
+.nr :where(button,input,textarea,select){font-family:inherit;font-size:inherit;color:inherit}
+/* Ссылки зелёные — но не те, что выглядят кнопками: у кнопки цвет текста
+   задаёт её вариант. Исключение написано прямо здесь, потому что вес
+   селектора «.nr a» выше, чем у «.btn-primary», и без него текст кнопки
+   становился зелёным на зелёном — видна была только иконка. */
+.nr a:not(.btn):not(.btn-icon){color:var(--green);text-decoration:none}
+/* Сброс не должен перебивать отступы mt8–mt28 у заголовков и абзацев. */
+.nr :where(h1,h2,h3,h4,p,ul,ol){margin:0}
+.nr ul,.nr ol{padding:0;list-style:none}
+[hidden]{display:none !important}
+
+/* ---------- каркас ---------- */
+.nr{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.shell{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+.shell-body{flex:1;display:flex;min-height:0}
+.plain{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px}
+
+/* ---------- шапка ---------- */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-bottom:1px solid var(--green-line);
+  padding:12px 24px;background:var(--bg);flex:none;
+  position:sticky;top:0;z-index:40;
+}
+.hdr-l{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.hdr-r{display:flex;align-items:center;gap:12px;flex:none}
+.logo{width:40px;height:40px;border-radius:12px;object-fit:cover;flex:none}
+.wordmark{font-size:20px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;min-width:0}
+.wordmark span{color:var(--green)}
+.chip-user{
+  background:#fff;border-radius:12px;padding:8px 12px;font-size:12px;font-weight:600;
+  text-transform:none;letter-spacing:0;color:var(--ink-50);white-space:nowrap;
+}
+.burger{display:none;background:#fff;border:1px solid var(--tan);border-radius:2px;padding:8px;cursor:pointer;line-height:0;color:var(--ink)}
+
+/* ---------- сайдбар ---------- */
+.side{
+  width:var(--sidebar-w);flex:none;background:var(--panel);
+  border-right:1px solid var(--green-line);
+  padding:20px 16px;display:flex;flex-direction:column;gap:20px;
+  overflow-y:auto;overscroll-behavior-y:contain;
+}
+.side > *{flex-shrink:0}
+/* Меню остаётся под шапкой; длинный список классов прокручивается отдельно. */
+@media (min-width:1024px){
+  .side{
+    position:sticky;top:var(--header-h);align-self:flex-start;
+    height:calc(100vh - var(--header-h));height:calc(100dvh - var(--header-h));
+  }
+}
+.side-label{font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-45)}
+.side-group{display:flex;flex-direction:column;gap:8px}
+.side-items{display:flex;flex-direction:column;gap:2px}
+.classrow{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 10px;border-radius:4px;background:transparent;cursor:pointer;
+  border:none;text-align:left;width:100%;font:inherit;
+}
+.classrow:hover{background:rgba(255,255,255,.6)}
+.classrow[aria-current="true"]{background:#fff}
+.classrow-t{min-width:0;display:block}
+.classrow-n{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.classrow-s{display:block;font-size:12px;color:var(--ink-50);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.classrow-c{font-size:12px;color:var(--ink-45);font-variant-numeric:tabular-nums}
+.navitem{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;
+  background:transparent;color:var(--ink-70);font-size:14px;font-weight:500;
+  cursor:pointer;border:none;width:100%;text-align:left;font-family:inherit;
+}
+.navitem:hover{background:rgba(255,255,255,.55)}
+.navitem[aria-current="true"]{background:#fff;color:var(--green);font-weight:600}
+.navitem[aria-current="true"] svg{stroke:var(--green)}
+.hair{height:1px;background:var(--hair);flex:none}
+/* оверлей для мобильного drawer */
+.scrim{
+  display:none;position:fixed;inset:0;background:rgba(31,41,51,.4);
+  z-index:44;border:none;padding:0;
+}
+
+/* ---------- контент ---------- */
+.main{flex:1;min-width:0;padding:28px 36px;overflow-x:hidden}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-50);flex-wrap:wrap;margin-bottom:12px}
+.crumbs button{background:none;border:none;padding:0;color:var(--green);font:inherit;cursor:pointer}
+.crumbs button:hover{text-decoration:underline}
+.crumbs .sep{color:var(--ink-45)}
+
+.h1{font-size:30px;font-weight:900;letter-spacing:-.025em;line-height:1.15;text-wrap:balance}
+.h2{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.h3{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:15px;line-height:1.55;color:var(--ink-60);max-width:70ch}
+.muted{color:var(--ink-60)}
+.small{font-size:13px}
+.tiny{font-size:12px;color:var(--ink-50)}
+.eyebrow{font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-45)}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+/* Объяснение грамматики: правило из учебника и пояснение — разными абзацами. */
+.pre-line{white-space:pre-line}
+.mt22{margin-top:22px}.mt28{margin-top:28px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* Иконка и подпись, которая может не уместиться в строку: подпись переносится
+   под себя, а не уходит вся под иконку, как в .row на телефоне. */
+.row-line{display:flex;align-items:flex-start;gap:12px}.stack{display:flex;flex-direction:column;gap:16px}
+.stack-s{display:flex;flex-direction:column;gap:8px}.grow{flex:1;min-width:0}
+
+/* ---------- кнопки ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:2px;padding:9px 16px;font-size:14px;font-weight:600;line-height:1.2;
+  cursor:pointer;border:1px solid transparent;white-space:nowrap;
+  transition:background .12s,border-color .12s;
+  /* Высота фиксирована, а не выведена из содержимого: иначе кнопка с
+     иконкой выше кнопки без неё, и ряд действий идёт лесенкой. */
+  min-height:var(--ctl-h);
+}
+.btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.btn svg{flex:none}
+/* Текст на зелёном — всегда белый.
+   Ссылка названа отдельно: кнопка бывает и <a>, а у ссылок в кабинете свой
+   зелёный цвет — зелёным по зелёному не читается ничего.
+
+   Наведение — вторым правилом и тоже с ссылкой. Если написать цвет ссылки
+   одним правилом с :hover, как было, то a.btn-primary:hover окажется
+   специфичнее, чем .btn-primary:hover, и зелёные кнопки-ссылки перестанут
+   темнеть под курсором: белый текст чинится, отклик на наведение ломается. */
+.btn-primary,.btn-primary:focus,a.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover,a.btn-primary:hover{background:var(--green-dark);color:#fff}
+.btn-primary svg{stroke:#fff}
+.btn-outline{background:#fff;color:var(--ink);border-color:var(--tan)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-ghost{background:transparent;color:var(--ink-70)}
+.btn-ghost:hover{background:var(--green-08);color:var(--green)}
+.btn-danger{background:#fff;color:var(--err);border-color:var(--err-line)}
+.btn-danger:hover{background:var(--err-bg)}
+/* Увеличенного размера у кнопок нет намеренно. Раньше главное действие экрана
+   шло классом btn-lg (44px, кегль 15) рядом с «Назад» обычного размера (38px,
+   кегль 14), и пара кнопок в одной строке стояла лесенкой. Выделяет главное
+   действие цвет, а не рост. */
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+/* Иконочная кнопка ростом с обычную: в строке таблицы они стоят рядом,
+   и разнобой по высоте видно сразу. */
+.btn-icon{
+  padding:8px;border-radius:2px;background:#fff;border:1px solid var(--tan);
+  cursor:pointer;line-height:0;color:var(--ink-60);
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:var(--ctl-h);min-height:var(--ctl-h);
+}
+.btn-icon:hover{border-color:var(--green);color:var(--green)}
+.btn-icon[disabled]{opacity:.35;cursor:not-allowed}
+.btn-icon[disabled]:hover{border-color:var(--tan);color:var(--ink-60)}
+
+/* Ряд иконок переносится, а не уезжает за край: на 375 px пятая кнопка
+   оказывалась за границей экрана, и от неё была видна только полоска. */
+.row-icons{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+/* Удаление отбито зазором и помечено цветом: около 32 px без промежутка
+   учитель метил в «перетащить», а попадал в «удалить». */
+.btn-del{margin-left:12px}
+.btn-del:hover:not([disabled]){border-color:var(--err-line);color:var(--err);background:var(--err-bg)}
+.btn-compact{padding:7px 12px;font-size:13px}
+
+/* ---------- тумблер (ClassLessons: «Открыт для присоединения») ---------- */
+.toggle-switch{display:inline-flex;align-items:center;gap:10px;background:none;border:none;padding:0;cursor:pointer;font:inherit;color:inherit}
+.toggle-track{width:36px;height:20px;border-radius:12px;background:var(--hair);position:relative;flex:none;transition:background .15s}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(31,41,51,.25);transition:left .15s}
+.toggle-switch[aria-pressed="true"] .toggle-track{background:var(--green)}
+.toggle-switch[aria-pressed="true"] .toggle-thumb{left:18px}
+.toggle-label{font-size:13px;color:var(--ink-60)}
+
+/* ---------- кебаб-меню (ClassStudents: «⋮» → выпадающий список) ---------- */
+/* Добавлено при переносе в React: в прототипе меню вешалось на body с
+   расчётом координат, здесь оно живёт рядом с кнопкой. Так оно само
+   уезжает вместе со строкой при скролле и не отвязывается от неё. */
+.kebab-wrap{position:relative;display:inline-flex}
+.kebab-wrap .kebab-menu{right:0;top:calc(100% + 4px)}
+
+.kebab-menu{
+  position:absolute;z-index:55;min-width:220px;background:#fff;border:1px solid var(--tan);
+  border-radius:4px;box-shadow:0 8px 24px rgba(31,41,51,.14);padding:6px;
+}
+.kebab-menu button{
+  display:block;width:100%;text-align:left;background:none;border:none;border-radius:2px;
+  padding:9px 10px;font-size:14px;font-family:inherit;cursor:pointer;color:var(--ink);
+}
+.kebab-menu button:hover{background:var(--card-bg)}
+.kebab-menu button.danger{color:var(--err)}
+
+.actions{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-top:28px;padding-top:20px;border-top:1px solid var(--hair);
+}
+
+/* ---------- карточки ---------- */
+.card{
+  border:1px solid var(--green-08);background:var(--card-bg);border-radius:8px;
+  padding:22px 24px;display:flex;flex-direction:column;gap:6px;
+}
+.card-white{background:#fff;border-color:var(--tan)}
+/* Отдельные поля формы отделяем сильнее, чем строки описания карточки. */
+.card-form{gap:16px}
+/* Свёрнутая конструкция грамматики: название слева, примеры справа, стрелка
+   в конце — строкой, а не карточкой-плиткой. */
+.grammar-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px}
+.card-pick{cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;transition:border-color .12s,background .12s}
+.card-pick:hover{border-color:var(--green-28);background:rgba(245,239,230,.6)}
+.card-pick[aria-pressed="true"]{border-color:var(--green);background:#fff;box-shadow:inset 0 0 0 1px var(--green)}
+/* Выбранный материал в каталоге. Отдельный класс, а не card-pick:
+   там вся карточка — кнопка, а здесь внутри свои кнопки и плеер,
+   и делать кнопкой ещё и обёртку значит ломать клик по плееру. */
+.card-picked{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
+/* «Кому» в форме выдачи: пока вариант один, и это не выбор, а
+   утверждение — подгруппы и отдельные ученики появятся позже. */
+.assign-whom{
+  border:1px solid var(--green);background:var(--green-08);border-radius:2px;
+  padding:11px 14px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.card-dashed{
+  border:1px dashed var(--green-28);border-radius:8px;background:transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  min-height:172px;color:var(--green);cursor:pointer;font:inherit;font-weight:600;font-size:14px;
+}
+.card-dashed:hover{background:var(--green-08)}
+.card-dashed .dot{
+  width:44px;height:44px;border-radius:12px;background:var(--green-08);
+  display:flex;align-items:center;justify-content:center;
+}
+
+.grid{display:grid;gap:18px}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.classcard{min-height:172px}
+.classcard-n{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.classcard-s{font-size:14px;color:var(--ink-60)}
+.classcard-f{margin-top:auto;display:flex;align-items:center;gap:8px;color:var(--ink-60);font-size:14px}
+
+/* ---------- бейджи ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;border-radius:2px;
+  padding:3px 8px;font-size:12px;font-weight:600;white-space:nowrap;
+}
+.badge-green{background:var(--ok-08);color:var(--ok)}
+.badge-gray{background:var(--hair);color:var(--ink-60)}
+.badge-warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line)}
+.badge-err{background:var(--err-bg);color:var(--err);border:1px solid var(--err-line)}
+.badge-lvl{background:#fff;border:1px solid var(--tan);color:var(--ink-60)}
+/* ---------- поля ---------- */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-70)}
+.field .hint{font-size:12px;color:var(--ink-50)}
+/* Ошибка поля: Field её уже рисует, но правила для неё не было — текст
+   выглядел обычной подписью, и отказ сервера читался как пояснение. */
+.field .err,.err{font-size:12px;color:var(--err)}
+.input,.textarea,.select{
+  width:100%;background:#fff;border:1px solid var(--tan);border-radius:2px;
+  padding:10px 12px;font-size:14px;color:var(--ink);
+}
+.input:focus,.textarea:focus,.select:focus{outline:none;border-color:var(--green)}
+/* Отключённое поле: фон панели и курсор «нельзя». Пока оно выглядело как
+   обычное, человек кликал в почту, печатал и не понимал, почему ничего не
+   происходит, — подпись под полем читают уже после. Текст оставляем тёмным:
+   поле не редактируется, но читать его нужно. */
+.input:disabled,.textarea:disabled,.select:disabled{
+  background:var(--panel);border-color:var(--hair);color:var(--ink-70);cursor:not-allowed;
+}
+.textarea{resize:vertical;min-height:96px;line-height:1.6}
+/* Поле на одну строку, которое растёт вместе с текстом (GrowInput).
+   Однострочный input в парах «выражение — перевод» обрезал содержимое по
+   правому краю, и проверить урок перед выдачей было нельзя. Высоту считает
+   JS, поэтому здесь только запрет ручного растягивания и та же высота, что
+   у обычного поля в один ряд с соседями. */
+.input-grow{resize:none;overflow:hidden;min-height:var(--ctl-h);line-height:1.45;white-space:pre-wrap}.select{appearance:none;padding-right:32px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231F2933' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.filters .field{min-width:150px}
+.filters .field.grow{flex:1;min-width:220px}
+.check{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;line-height:1.45}.check input{margin-top:2px;width:16px;height:16px;accent-color:var(--green);flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--tan);
+  border-radius:2px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:inherit;color:inherit;
+}
+.chip[aria-pressed="true"]{border-color:var(--green);background:var(--green-08);color:var(--green);font-weight:600}
+.chip .x{color:var(--ink-45);font-weight:700;line-height:1}
+.chip .x:hover{color:var(--err)}
+
+/* ---------- таблицы ---------- */
+.table-wrap{overflow-x:auto;border:1px solid var(--green-08);border-radius:8px;background:#fff}
+.nr table{border-collapse:collapse;width:100%;font-size:14px}
+.nr th{
+  text-align:left;font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;
+  color:var(--ink-45);padding:12px 16px;border-bottom:1px solid var(--hair);white-space:nowrap;
+}
+.nr td{padding:14px 16px;border-bottom:1px solid var(--hair);vertical-align:middle}
+.nr tbody tr:last-child td{border-bottom:none}
+.nr tbody tr.clickable{cursor:pointer}
+.nr tbody tr.clickable:hover{background:var(--card-bg)}
+.t-name{font-weight:600}
+/* Ряд действий в строке таблицы: кнопка и иконки одной высоты и в одну линию. */
+.t-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+/* На широком экране ряд в таблице не переносится: перенос уводил «Удалить»
+   на вторую строку одну, а место есть у колонки с названием. На узком ряд
+   переносится как раньше: без переноса иконки уходили за край таблицы. */
+@media (min-width:1200px){.t-actions .row-icons{flex-wrap:nowrap}}
+.mobile-cards{display:none}
+
+/* ---------- вкладки ---------- */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--hair);margin-top:20px;overflow-x:auto}
+.tab{
+  background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;
+  font-size:14px;font-weight:600;color:var(--ink-60);cursor:pointer;white-space:nowrap;font-family:inherit;
+}
+.tab:hover{color:var(--green)}
+.tab[aria-selected="true"]{color:var(--green);border-bottom-color:var(--green)}.steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-45);white-space:nowrap}.step[data-state="done"]{color:var(--green)}.step[data-state="now"]{color:var(--ink);font-weight:600}
+/* ---------- карта урока ---------- */
+.map{display:flex;flex-direction:column;max-width:760px}
+/* Точка вставки между блоками — из прототипа.
+   Без неё «добавить элемент» есть только в конце списка, и вставить задание
+   в середину урока нельзя: учителю приходится добавлять в хвост и тащить
+   карточку наверх. Пунктирный кружок на линии показывает само место. */
+.map-insert{display:flex;flex-direction:column;align-items:center;gap:0;padding:2px 0}.map .card-dashed{margin-top:10px}.map .card-dashed{margin-top:10px}
+@media (max-width:1023px){
+  .vocab-cols{grid-template-columns:1fr;gap:20px}
+  .vocab-source{position:static;max-height:none}
+  .vocab-source-body{max-height:240px}
+}
+@media (max-width:639px){
+  /* На телефоне подсказка во всю ширину, поэтому сбоку её не поставить —
+     остаются «над» и «под», и координату считает JS. Жёсткого left тут
+     больше нет: он перебивал расчёт и на 375 px подсказка садилась на
+     карточку класса. */
+  .hint-pop{width:calc(100vw - 28px)}
+  .hint-pop::before{display:none}
+}
+
+/* ---------- прогресс ---------- */
+.bar{height:6px;border-radius:3px;background:var(--hair);overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--green);transition:width .3s ease;border-radius:3px}
+/* ---------- модалка ---------- */
+.modal-scrim{
+  position:fixed;inset:0;background:rgba(31,41,51,.45);z-index:50;
+  display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;
+}
+.modal{
+  background:var(--bg);border-radius:8px;width:100%;max-width:560px;
+  box-shadow:0 24px 64px rgba(31,41,51,.22);max-height:calc(100vh - 48px);
+  display:flex;flex-direction:column;
+}
+.modal-wide{max-width:760px}
+.modal-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 0}
+.modal-bd{padding:18px 24px;overflow-y:auto;flex:1}
+.modal-ft{display:flex;gap:12px;justify-content:flex-end;padding:0 24px 22px;flex-wrap:wrap}
+.modal-x{background:none;border:none;cursor:pointer;padding:4px;line-height:0;color:var(--ink-45)}
+.modal-x:hover{color:var(--ink)}@keyframes focus-pointer{0%,16%{transform:translate(44px,38px);opacity:0}32%,70%{transform:translate(0,0);opacity:1}86%,100%{transform:translate(3px,4px);opacity:0}}
+/* На телефоне окно почти во весь экран: семь карточек с картинкой иначе
+   превращаются в узкую полоску посреди затемнения. */
+@media (max-width:639px){.modal-scrim:has(.teacher-focus){padding:8px;align-items:stretch}.teacher-focus{max-width:none;max-height:calc(100dvh - 16px);min-height:calc(100dvh - 16px)}.teacher-focus .modal-hd{padding:16px 16px 0}.teacher-focus .modal-bd{padding:12px 16px}.teacher-focus .modal-ft{padding:0 16px 16px}.teacher-focus-layout{grid-template-columns:1fr;gap:16px}.teacher-focus-copy{min-height:0}.teacher-focus-shot{height:52dvh;min-height:280px;padding:12px}.teacher-focus .modal-ft{justify-content:space-between}.teacher-focus .modal-ft .toggle-switch{width:100%}}
+@media (prefers-reduced-motion:reduce){.focus-pointer{animation:none;opacity:1;transform:none}}
+
+/* ---------- тост ---------- */
+.toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{
+  background:var(--ink);color:#fff;border-radius:4px;padding:10px 16px;font-size:14px;font-weight:500;
+  box-shadow:0 8px 24px rgba(31,41,51,.28);animation:toastin .18s ease;max-width:min(90vw,460px);
+}
+@keyframes toastin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* Сколько раз повторилось то же сообщение. Две одинаковые плашки внахлёст
+   ничего не добавляли и закрывали строку под собой — вместо второй копии
+   считаем повторы. */
+.toast-n{margin-left:8px;opacity:.7;font-variant-numeric:tabular-nums}
+
+/* ---------- вспомогательное ---------- */
+.notice{
+  border:1px solid var(--warn-line);background:var(--warn-bg);color:var(--warn);
+  border-radius:4px;padding:12px 14px;font-size:13px;line-height:1.5;
+}
+.notice-green{border-color:var(--green-28);background:var(--green-08);color:var(--green)}
+.notice-err{border-color:var(--err-line);background:var(--err-bg);color:var(--err)}
+/* Жёлтая плашка — «сделать можно, но лучше сначала посмотреть». Отличается
+   от красной: это предупреждение, а не отказ. */
+.notice-warn{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn)}@container(min-width:700px){.quality-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.quality-panel{padding:12px}.quality-footer .btn{width:100%}}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px}
+.kv dt{color:var(--ink-50)}
+.kv dd{margin:0;font-weight:500}
+.empty{padding:48px 24px;text-align:center;color:var(--ink-50);font-size:14px}
+/* Заглушка строки на время загрузки. «Классов пока нет» у учителя, у которого
+   их пять, — это неправда, которую видно на каждой перезагрузке; пустое
+   состояние имеет право появиться только после ответа сервера. */
+.skel{display:block;height:34px;border-radius:4px;background:linear-gradient(90deg,var(--hair),rgba(31,41,51,.04),var(--hair));
+  background-size:200% 100%;animation:skel 1.2s ease-in-out infinite}
+@keyframes skel{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){ .skel{animation:none} }
+/* ============================================================
+   Адаптив
+   ============================================================ */
+
+@media (max-width:1200px){
+  .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (max-width:1023px){
+  .burger{display:inline-flex}
+  .side{
+    position:fixed;top:0;left:0;bottom:0;width:280px;z-index:45;
+    transform:translateX(-100%);transition:transform .2s ease;
+    box-shadow:0 0 40px rgba(31,41,51,.18);
+  }
+  body[data-drawer="open"] .side{transform:none}
+  body[data-drawer="open"] .scrim{display:block}
+  .main{padding:22px 20px}
+  .grid-3,.grid-2,.grid-4{grid-template-columns:1fr}
+  .h1{font-size:26px}
+}
+
+/* ---------- таблицы превращаются в карточки раньше, чем остальной мобильный
+   набор: широкие таблицы неудобны уже на планшете ---------- */
+@media (max-width:900px){
+  .table-wrap{display:none}
+  .mobile-cards{display:flex;flex-direction:column;gap:10px}
+  .mcard{
+    border:1px solid var(--green-08);background:#fff;border-radius:8px;padding:14px 16px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .mcard-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .mcard-n{font-size:15px;font-weight:600}
+  .mcard-kv{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink-60)}
+  .mcard-kv b{font-weight:600;color:var(--ink)}
+  .mcard-ft{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+  .mcard-ft .btn{flex:1;min-width:0}
+  .mcard-ft .btn-compact{flex:0 0 auto;padding:9px 12px}
+  /* Ряд действий внутри карточки: на 375 px пять кнопок в inline-flex не
+     помещались, и пятая — «Удалить» — уходила за правый край. Занимает всю
+     ширину карточки и переносится. */
+  .mcard-ft .row-icons{display:flex;width:100%;flex-wrap:wrap;gap:8px}
+  .mcard-ft .row-icons .btn{flex:1 1 auto}
+  .mcard-ft .row-icons .btn-del{margin-left:auto}
+}
+
+@media (max-width:639px){
+  .hdr{padding:10px 14px;gap:8px}
+  .wordmark{font-size:16px}
+  .hdr-r{gap:6px}
+  .logo{width:32px;height:32px;border-radius:10px}
+  .chip-user{display:none}
+  .main{padding:18px 14px 92px}
+  .h1{font-size:23px}
+  .h2{font-size:19px}
+  .lead{font-size:14px}
+
+  /* липкая панель действий */
+  .actions{
+    position:fixed;left:0;right:0;bottom:0;z-index:35;margin:0;
+    background:var(--bg);border-top:1px solid var(--green-line);
+    padding:12px 14px;box-shadow:0 -4px 16px rgba(31,41,51,.06);
+  }
+  .actions .btn{flex:1;min-width:0;white-space:normal;text-align:center;line-height:1.25;font-size:13px;padding:9px 10px}
+  .actions .spacer{display:none}
+  .actions-static{position:static;box-shadow:none;padding:20px 0 0;border-top:1px solid var(--hair)}
+
+  .modal-scrim{padding:0;align-items:stretch}
+  .modal{max-width:none;border-radius:0;max-height:100vh;max-height:100dvh}
+  .modal-ft{position:sticky;bottom:0;background:var(--bg);padding-top:12px;border-top:1px solid var(--hair)}
+  .modal-ft .btn{flex:1}
+
+  .filters .field,.filters .field.grow{min-width:0;width:100%}
+  .filters{flex-direction:column;align-items:stretch}
+
+  .blockcard{flex-wrap:wrap}
+  .blockcard .btools{width:100%;justify-content:flex-end;padding-top:4px}
+  /* «Поговорить с аватаром» в ряд с иконками не помещается и обрезалась
+     слева — на телефоне у неё своя строка над инструментами. */
+  .blockcard .btools{flex-wrap:wrap}
+  .blockcard .btalk{flex:1 1 100%;justify-content:center}
+  .steps{gap:4px}
+  .step .lbl{display:none}
+  .step[data-state="now"] .lbl{display:inline}
+  .toasts{bottom:88px}
+
+  /* Шапка карты урока: «Опубликовать версию» упиралась в край экрана.
+     Кнопки уходят на свою строку и делят её пополам — отступ от края тогда
+     тот же, что у остального содержимого. */
+  .map-hd > .row:last-child{width:100%}
+  .map-hd > .row:last-child .btn{flex:1;min-width:0}
+
+  /* Область нажатия не меньше 44 px — за счёт отступов, кегль не растёт.
+     «Войти по личному коду» — дорога ученика обратно в класс с чужого
+     телефона, и попасть по строке высотой 17 px пальцем ребёнка нельзя. */
+  .auth-foot{margin-top:10px}
+  .auth-foot a,.auth-foot button,.auth-link-right a{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:44px;padding:0 10px;
+  }
+  .navitem,.classrow{min-height:44px}
+}
+
+@media (max-width:479px){
+  .wordmark{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* ============================================================
+   Экраны входа / регистрации (артборды Login, Register,
+   CheckEmail, PasswordReset)
+   ============================================================ */
+
+.auth-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:48px 24px;width:100%;
+}
+.auth-cols{display:flex;gap:24px;align-items:stretch;flex-wrap:wrap;justify-content:center;width:100%}
+.auth-card{
+  width:460px;max-width:100%;background:#fff;border:1px solid var(--green-line);
+  border-radius:16px;padding:32px;
+}
+.auth-card-gold{
+  background:linear-gradient(135deg,rgba(212,167,85,.12),#fff 55%,rgba(245,239,230,.7));
+  border-color:rgba(212,167,85,.25);
+}.auth-eyebrow{font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--green)}
+.auth-eyebrow-gold{color:var(--warn)}
+.auth-card h1{margin:8px 0 12px;font-size:30px;font-weight:900;letter-spacing:-.025em}
+.auth-card > p{margin:0 0 24px;font-size:14px;line-height:1.6;color:var(--ink-60)}
+.auth-fields{display:flex;flex-direction:column;gap:16px}
+.auth-field label{
+  display:block;margin-bottom:4px;font-size:12px;font-weight:600;
+  text-transform:none;letter-spacing:0;color:var(--ink-50);
+}
+.auth-field .input{padding:12px 16px;font-size:16px;border-color:rgba(217,195,163,.4)}
+.auth-field .input.mono{font-family:inherit;letter-spacing:.16em}
+.auth-field .hint{margin-top:6px;font-size:12px;color:var(--ink-45)}
+.auth-field .err{margin-top:6px;font-size:13px;color:var(--err)}
+.auth-submit{
+  width:100%;margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:2px;
+  padding:13px 16px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+.auth-submit:hover{background:var(--green-dark)}
+.auth-submit-gold{background:var(--gold)}
+.auth-submit-gold:hover{background:#bd9243}
+.auth-foot{margin-top:18px;text-align:center;font-size:14px;color:var(--ink-60)}
+.auth-foot button{background:none;border:none;padding:0;font:inherit;font-weight:600;color:var(--green);cursor:pointer}
+.auth-foot button:hover{text-decoration:underline}
+.auth-foot-gold button{color:var(--warn)}.auth-icon{
+  width:64px;height:64px;border-radius:12px;background:var(--green-08);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--green);
+}
+
+@media (max-width:639px){
+  .auth-wrap{padding:24px 14px;align-items:flex-start}
+  .auth-card{padding:24px 20px;border-radius:12px}
+  .auth-card h1{font-size:25px}
+  .auth-cols{gap:16px}
+}
+
+/* прячем длинную подпись кнопки на узких экранах */
+@media (max-width:820px){ .hide-xs{display:none} }
+
+/* ---------- баннер сессии просмотра ---------- */
+/* Добавлено сверх макета: требование NEW-18 — пока администратор работает
+   от имени пользователя, это должно быть видно на каждом экране, а не
+   только на том, где сессия открывалась. Красный и липкий намеренно:
+   баннер, который можно не заметить, своей задачи не выполняет. */
+.impersonation-banner{
+  position:sticky;top:0;z-index:50;padding:10px 24px;font-size:13px;font-weight:600;
+  background:var(--err-bg);color:var(--err);border-bottom:1px solid var(--err-line);
+}
+
+/* ---------- служебные состояния React-контура ---------- */
+/* Экран «проверяем доступ» и мелочи, которых не было в макете: в прототипе
+   данные лежали в localStorage и появлялись мгновенно, здесь их приносит
+   сеть, и промежуточное состояние нужно показать. */
+.nr-loading{align-items:center;justify-content:center;color:var(--ink-50);font-size:14px}
+/* ---------- заметка «почта не настроена» ---------- */
+/* Видна только когда SMTP не задан. Намеренно не похожа на остальной
+   интерфейс: это строительные леса, а не часть продукта, и спутать их
+   с настоящим экраном нельзя. */
+.dev-note{
+  text-align:left;border:1px dashed var(--warn-line);background:var(--warn-bg);
+  border-radius:8px;padding:16px 18px;color:var(--warn);font-size:13px;line-height:1.6;
+}
+/* ---------- сборка урока ---------- */
+/* Сборка идёт 30–45 секунд, и всё это время экран обязан показывать
+   движение: молчащий спиннер человек считает зависанием. */
+.build-progress{
+  margin-top:8px;padding:16px 18px;border-radius:8px;
+  background:var(--green-08);border:1px solid var(--green-line);
+}
+.spinner{
+  width:16px;height:16px;flex:none;border-radius:50%;
+  border:2px solid var(--green-28);border-top-color:var(--green);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Плашка о сборке вне мастера: учитель ушёл к классам, а урок собирается.
+   Без неё кабинет молчит, и это выглядит зависанием. */
+.build-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}@media (prefers-reduced-motion:reduce){ .spinner{animation-duration:2.4s} }
+/* ---------- редактор урока ---------- */
+/* Пара «выражение — перевод» и вопрос с вариантами: строки, которые
+   учитель правит десятками, поэтому они должны быть плотными и не
+   разъезжаться на узком экране. */
+/* Номер пары и буква варианта ответа.
+   В прототипе класс .bnum стоит в разметке, но правила для него нет вовсе —
+   порядок читался только по месту в списке. Номер нужен: учитель говорит
+   «третья пара», а не «та, где про печь», и ученик видит то же самое. */
+.bnum{
+  width:22px;height:22px;border-radius:11px;flex:none;
+  background:var(--green-08);color:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
+}@media (max-width:639px){
+  .pair-row{flex-wrap:wrap}
+  .pair-row .input{flex:1 1 100%}
+}
+
+/* ---------- мастер создания: недоступные источники ---------- */
+/* Источник, который сервис ещё не умеет, не прячем: спрятанная
+   возможность выглядит как отсутствующая навсегда. Показываем приглушённо
+   и объясняем при нажатии, когда появится. */
+.card-muted{opacity:.62}.frank{
+  white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.8;
+  color:var(--ink-70);margin:0;
+}
+/* Пара сопоставления — тот же приём, что и в списке выражений: обе половины
+   одного кегля, правая отличается цветом. Ответ мельче задания читался как
+   сноска к нему, а это равноправная половина пары. */
+.pair-preview{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:14px}
+/* ---------- разговор с аватаром ---------- */
+/* Ученик отвечает голосом или текстом: у части нет микрофона, часть
+   стесняется говорить при классе. Оба способа рядом, ни один не спрятан. */
+.chat{width:100%;max-width:720px;margin:0 auto;display:flex;flex-direction:column}
+.chat-body{
+  flex:1;min-height:280px;max-height:60vh;overflow-y:auto;
+  display:flex;flex-direction:column;gap:10px;padding:4px;
+}
+.bubble{
+  max-width:80%;padding:11px 14px;border-radius:14px;font-size:15px;line-height:1.55;
+  white-space:pre-wrap;
+}
+.bubble-avatar{align-self:flex-start;background:var(--panel);border-bottom-left-radius:4px}
+/* Образец реплики на экране настройки разговора: зелёный, как в прототипе —
+   так видно, что это пример реплики аватара, а не сама реплика. */
+.bubble-sample{background:var(--green-08);border:1px solid var(--green-28)}
+.bubble-student{
+  align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:4px;
+}
+.bubble-typing{opacity:.6;letter-spacing:.2em}
+/* «Повторить» у реплики аватара: приглушена, пока на неё не навели, чтобы
+   не спорить за внимание с самим текстом реплики. */
+.bubble-repeat{
+  display:flex;align-items:center;gap:6px;margin-top:8px;padding:4px 8px;
+  border:1px solid transparent;border-radius:999px;background:transparent;
+  color:var(--ink-50);font:inherit;font-size:.82rem;cursor:pointer;opacity:.7;
+  transition:opacity .16s ease,border-color .16s ease,color .16s ease;
+}.chat-input{display:flex;gap:8px;align-items:center}
+.chat-input .input{flex:1;min-width:0}@media (max-width:639px){
+  .bubble{max-width:92%}
+  .chat-body{max-height:none}
+}
+
+/* ---------- план урока и карточка ученика ---------- */
+/* Здесь было второе объявление .notice и .notice-green — дубль, которого нет
+   в прототипе. Оно стояло ниже первого и перебивало его: плашка становилась
+   флексом с нейтральной рамкой, но янтарные фон и текст от первого правила
+   оставались, и выходило полупредупреждение непонятного вида. Единственное
+   объявление — выше, в разделе «вспомогательное», и оно совпадает с макетом. */
+/* Выключенный блок плана виден, но приглушён: убранное из урока должно
+   остаться на глазах, иначе его не вернут. */
+.blockcard[data-off="1"]{opacity:.5}
+/* Полоса освоения: разбивка по видам заданий важнее общей суммы. */
+.bar{height:8px;border-radius:4px;background:var(--hair);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:4px}
+/* ---------- прохождение урока учеником ---------- */
+
+/* Урок шире формы входа: текст на 460 пикселях читать неудобно, а пары в
+   сопоставлении в две колонки просто не помещаются. */
+.auth-card-wide{width:720px}
+
+/* Аватар — герой ученика. */
+.avatar-pic{border-radius:14px;flex:none;object-fit:cover}
+
+.progress{height:4px;background:var(--green-08);border-radius:2px;overflow:hidden}
+/* Текст урока читают, а не просматривают: крупнее и с воздухом между строк. */
+.reading{font-size:16px;line-height:1.85;white-space:pre-line}
+
+/* Сопоставление: слева выражения, справа перемешанные переводы. */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+
+.choice{
+  width:100%;text-align:left;background:#fff;border:1px solid var(--tan);
+  border-radius:6px;padding:11px 14px;font:inherit;font-size:14px;color:var(--ink);
+  cursor:pointer;transition:border-color .12s,background .12s;
+}
+.choice:hover:not(:disabled){border-color:var(--green);background:var(--green-08)}
+.choice:disabled{cursor:default}
+
+/* Разбор ответа. Цвет — не единственный признак: у верного варианта рамка
+   толще, и человек с дальтонизмом тоже видит разницу. */
+.choice.ok,.card-pick.ok{border-color:var(--ok);border-width:2px;background:var(--ok-08)}
+.choice.bad,.card-pick.bad{border-color:var(--err);background:var(--err-bg)}
+
+/* Итог ответа — главное событие экрана, ради него ученик и нажимал.
+   Раньше «Верно!» шло серым 13-м кеглем под всем списком вариантов, ниже
+   линии карточки: на телефоне оно уезжало под сгиб, и ребёнок жал второй
+   раз. Теперь строка стоит сразу под выбранным вариантом и набрана крупно.
+   Иконка обязательна: цвет не должен быть единственным признаком. */
+.verdict{
+  display:flex;align-items:center;gap:8px;margin-top:6px;
+  font-size:15px;font-weight:700;line-height:1.35;
+}.verdict svg{flex:none}
+
+/* Итог урока: что отработано и что не вышло. Разбор ошибок — единственное
+   место, где ученик узнаёт что-то сверх угадывания, поэтому он на экране, а
+   не спрятан. */
+.sum-list{display:flex;flex-direction:column;gap:6px}
+.sum-item{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.5}
+.sum-item svg{flex:none;color:var(--green);margin-top:3px}
+.miss{border:1px solid var(--err-line);background:var(--err-bg);border-radius:6px;padding:12px 14px}
+.miss + .miss{margin-top:8px}
+@media (max-width:720px){
+  .auth-card-wide{width:100%}
+  .match{grid-template-columns:1fr}
+}
+
+/* ---------- список ключевых выражений ---------- */
+
+/* Выражение и перевод — одного кегля.
+   Раньше перевод шёл классом tiny (12px) рядом с фразой в 14px, и список
+   выглядел рваным: глаз читал два разных текста вместо одной пары.
+   Различаются они насыщенностью и цветом, а не размером. */
+.vocab-row{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:14px;line-height:1.5}
+.vocab-row .ph{font-weight:600;color:var(--ink)}
+.vocab-row .tr{font-weight:400;color:var(--ink-60)}
+.vocab-list{display:flex;flex-direction:column;gap:10px}
+
+/* ---------- личные коды учеников ----------
+   Код переписывают с экрана и с бумаги: разрядка между знаками помогает не
+   потерять место, а шрифт — общий, без моноширинного. */
+.student-code{font-weight:700;letter-spacing:.12em;white-space:nowrap}
+
+/* Карточки для печати: отдельная страница без меню кабинета. */
+.cards-page{min-height:100vh;padding:32px 16px;max-width:900px;margin:0 auto}
+.cards-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.student-card{
+  background:#fff;border:1px dashed var(--tan);border-radius:4px;padding:16px 18px;
+  break-inside:avoid;page-break-inside:avoid;
+}
+.student-card-code{font-size:26px;font-weight:800;letter-spacing:.18em;margin-top:4px;color:var(--green)}
+.student-card-how{font-size:12px;line-height:1.5;color:var(--ink-60);margin-top:10px}
+
+@media print{
+  @page{size:A4;margin:10mm}
+  .no-print{display:none !important}
+  .nr.cards-page{background:#fff;padding:0;max-width:none}
+  /* Две колонки на листе A4 — карточки размером с визитку. */
+  .cards-grid{grid-template-columns:1fr 1fr;gap:0}
+  .student-card{border-radius:0;border-color:#999;color:#000}
+  .student-card-code{color:#000}
+}

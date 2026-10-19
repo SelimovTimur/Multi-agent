@@ -1,0 +1,181 @@
+/* ============================================================
+   conversation.css — отчёт по разговору с аватаром на странице выдачи
+   (pages/conversation/*, docs/product/avatar-goals/teacher-ui.md).
+
+   Токены — из cabinet.css, своих цветов нет. Каждое правило начинается с
+   .nr по той же причине, что в class-lesson.css: файл подключается из
+   экрана и в сборке стоит раньше cabinet.css. Подписи — обычным регистром:
+   капс таблиц кабинета здесь снят.
+   ============================================================ */
+
+.nr .cr{max-width:1180px}
+.nr .cr-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px 16px;flex-wrap:wrap}
+.nr .cr-lost{color:var(--err);font-weight:600}
+
+/* ---------- счётчики класса ---------- */
+.nr .cr-counts{display:flex;gap:10px;flex-wrap:wrap}
+.nr .cr-count{
+  display:flex;align-items:baseline;gap:8px;border:1px solid var(--tan);background:#fff;
+  border-radius:6px;padding:10px 14px;font-size:13px;color:var(--ink-60);
+}
+.nr .cr-count b{font-size:20px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- «По ученикам» ---------- */
+.nr .cr-table th{text-transform:none;letter-spacing:0;font-size:12px}
+.nr .cr-table td{font-variant-numeric:tabular-nums}
+/* Имя — кнопка: строку открывают и мышью, и с клавиатуры. */
+.nr .cr-name{
+  background:none;border:none;padding:0;font:inherit;font-weight:600;color:var(--ink);
+  cursor:pointer;text-align:left;
+}
+.nr .cr-name:hover{color:var(--green);text-decoration:underline}
+.nr .cr-name:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .cr-bad{color:var(--err);font-weight:600}
+
+/* ---------- раскрывающиеся строки: темы и общие ошибки ---------- */
+.nr .cr-list{display:flex;flex-direction:column;gap:8px}
+.nr .cr-item{border:1px solid var(--tan);border-radius:6px;background:#fff}
+.nr .cr-item-hd{
+  display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;width:100%;padding:12px 14px;
+  background:none;border:none;border-radius:6px;font:inherit;color:inherit;text-align:left;cursor:pointer;
+}
+.nr .cr-item-hd:hover{background:var(--card-bg)}
+.nr .cr-item-hd:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+.nr .cr-item-hd > .grow{min-width:200px}
+.nr .cr-item-hd svg{flex:none;color:var(--ink-45)}
+.nr .cr-item-t{display:block;font-weight:600}
+.nr .cr-item-sub{display:block;font-size:12px;color:var(--ink-50);margin-top:2px}
+.nr .cr-item-bd{padding:4px 14px 14px;border-top:1px solid var(--hair)}
+.nr .cr-stats{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:13px;color:var(--ink-60)}
+.nr .cr-stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+.nr .cr-stats .cr-bad b{color:var(--err)}
+.nr .cr-tags{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Ученики внутри темы — плотная таблица без капса и больших отступов. */
+.nr .cr-mini{width:100%;border-collapse:collapse;font-size:13px}
+.nr .cr-mini th,.nr .cr-mini td{padding:8px 10px 8px 0;border-bottom:1px solid var(--hair);text-align:left}
+.nr .cr-mini th{text-transform:none;letter-spacing:0;font-size:12px;font-weight:600;color:var(--ink-50)}
+.nr .cr-mini tbody tr:last-child td{border-bottom:none}
+.nr .cr-mini td + td,.nr .cr-mini th + th{text-align:right;font-variant-numeric:tabular-nums}
+
+/* Цитаты учеников в общей ошибке: кнопка ведёт в расшифровку ученика. */
+.nr .cr-who{margin-top:12px}
+.nr .cr-quotes{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.nr .cr-quote{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;width:100%;text-align:left;
+  background:var(--card-bg);border:1px solid var(--hair);border-radius:4px;padding:8px 10px;
+  font:inherit;font-size:13px;color:inherit;cursor:pointer;
+}
+.nr .cr-quote:hover{border-color:var(--green-28);background:#fff}
+.nr .cr-quote:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+
+/* ---------- карточка ученика ---------- */
+.nr .cr-card{scroll-margin-top:calc(var(--header-h) + 12px)}
+.nr .cr-card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.nr .cr-wait{align-items:flex-start}
+.nr .cr-wait-row{display:flex;align-items:center;gap:10px}
+
+/* Цели ученика: зачтено или нет, и сколько верных употреблений и ошибок. */
+.nr .cr-goals{gap:0}
+.nr .cr-goal{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--hair)}
+.nr .cr-goal:first-child{border-top:none}
+.nr .cr-goal-mark{
+  width:22px;height:22px;border-radius:11px;flex:none;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;background:var(--hair);color:var(--ink-50);
+}
+.nr .cr-goal.is-ok .cr-goal-mark{background:var(--ok-08);color:var(--ok)}
+.nr .cr-goal .cr-stats{font-size:12px;margin-top:4px}
+
+/* Отметки справа, расшифровка слева. На широком экране обе колонки
+   прокручиваются сами по себе: список отметок остаётся на глазах, пока
+   расшифровка едет к цитате. Липкая колонка здесь не работает — у .main
+   своя прокрутка по горизонтали. */
+.nr .cr-body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.nr .cr-transcript{grid-column:1;grid-row:1;min-width:0}
+.nr .cr-marks{grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:18px;min-width:0}
+.nr .cr-scroll{max-height:max(420px,calc(100vh - 220px));overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+
+.nr .cr-sec-t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;font-weight:700}
+.nr .cr-sec-toggle{
+  background:none;border:none;padding:0;font:inherit;font-size:12px;font-weight:600;
+  color:var(--green);cursor:pointer;
+}
+.nr .cr-sec-toggle:hover{text-decoration:underline}
+.nr .cr-sec-toggle:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .cr-marklist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.nr .cr-mark{
+  display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:#fff;
+  border:1px solid var(--tan);border-left:4px solid var(--ink-45);border-radius:4px;
+  padding:9px 12px;font:inherit;font-size:13px;line-height:1.45;color:inherit;cursor:pointer;
+}
+.nr .cr-mark:hover{background:var(--card-bg)}
+.nr .cr-mark:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.nr .cr-mark.is-active{background:var(--card-bg);box-shadow:0 0 0 2px var(--green-28)}
+.nr .cr-mark-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.nr .cr-mark-q{font-weight:600}
+
+/* ---------- расшифровка ---------- */
+.nr .cr-turns{display:flex;flex-direction:column;gap:10px}
+.nr .cr-turn{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;align-items:start}
+.nr .cr-turn:focus{outline:none}
+.nr .cr-turn-who{display:flex;flex-direction:column;gap:2px;padding-top:10px;font-size:12px;font-weight:600;color:var(--ink-60)}
+.nr .cr-turn-who .tiny{font-weight:400}
+.nr .cr-turn-body{border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.6;border:1px solid transparent}
+.nr .cr-turn.is-avatar .cr-turn-body{background:var(--panel)}
+.nr .cr-turn.is-student .cr-turn-body{background:#fff;border-color:var(--tan)}
+.nr .cr-turn.is-lit .cr-turn-body{border-color:var(--green);box-shadow:0 0 0 3px var(--green-08);animation:cr-flash 1.4s ease}
+@keyframes cr-flash{0%{box-shadow:0 0 0 6px var(--green-28)}100%{box-shadow:0 0 0 3px var(--green-08)}}
+
+/* Цитата в ответе: подложка и подчёркивание по виду отметки. */
+.nr .cr-q{background:none;color:inherit;padding:1px 0;border-radius:2px;border-bottom:2px solid transparent}
+.nr .cr-q.cr-tone-credited{background:var(--ok-08);border-bottom-color:var(--ok)}
+.nr .cr-q.cr-tone-goal_error{background:var(--err-bg);border-bottom-color:var(--err)}
+.nr .cr-q.cr-tone-general{background:var(--warn-bg);border-bottom-color:var(--gold)}
+.nr .cr-q.cr-tone-miss{border-bottom:2px dashed var(--ink-45)}
+.nr .cr-q.is-active{box-shadow:0 0 0 2px var(--ink-45)}
+.nr .cr-q.cr-tone-credited.is-active{background:rgba(var(--ok-rgb),.2);box-shadow:0 0 0 2px var(--ok)}
+.nr .cr-q.cr-tone-goal_error.is-active{background:rgba(163,58,43,.16);box-shadow:0 0 0 2px var(--err)}
+.nr .cr-q.cr-tone-general.is-active{background:rgba(217,164,6,.24);box-shadow:0 0 0 2px var(--gold)}
+
+/* Отметки под ответом: короткие строки, по нажатию подсвечивают цитату. */
+.nr .cr-notes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.nr .cr-note{
+  display:inline-flex;align-items:center;background:var(--card-bg);border:1px solid var(--hair);
+  border-left:3px solid var(--ink-45);border-radius:3px;padding:3px 8px;font:inherit;font-size:12px;
+  line-height:1.4;color:var(--ink-70);cursor:pointer;text-align:left;
+}
+.nr .cr-note:hover,.nr .cr-note.is-active{background:#fff;border-top-color:var(--tan);border-right-color:var(--tan);border-bottom-color:var(--tan)}
+.nr .cr-note:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.nr .cr-repair{margin-top:6px;font-size:12px;color:var(--ink-60);border-radius:3px}
+.nr .cr-repair s{color:var(--ink-50)}
+.nr .cr-repair.is-active{background:var(--card-bg);box-shadow:0 0 0 4px var(--card-bg);color:var(--ink)}
+
+/* Цвет кромки — вид отметки, один и тот же в списке и под ответом. Стоит
+   после .cr-mark и .cr-note: их собственная кромка иначе перебила бы цвет.
+   Цвет не единственный признак: у каждой отметки есть подпись словами. */
+.nr .cr-tone-goal_error{border-left-color:var(--err)}
+.nr .cr-tone-general{border-left-color:var(--gold)}
+.nr .cr-tone-credited{border-left-color:var(--ok)}
+.nr .cr-tone-miss{border-left-color:var(--ink-45)}
+.nr .cr-tone-repair{border-left-color:var(--tan)}
+
+.nr .cr-incidents{border:1px dashed var(--tan);border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.5;color:var(--ink-60)}
+
+/* ============================================================
+   Адаптив
+   ============================================================ */
+
+@media (max-width:1023px){
+  /* Одна колонка: сначала отметки, под ними расшифровка. Своих прокруток
+     нет — на узком экране вложенная прокрутка мешает больше, чем помогает. */
+  .nr .cr-body{grid-template-columns:minmax(0,1fr)}
+  .nr .cr-marks{grid-column:1;grid-row:1}
+  .nr .cr-transcript{grid-column:1;grid-row:2}
+  .nr .cr-scroll{max-height:none;overflow:visible;padding-right:0}
+}
+
+@media (max-width:639px){
+  .nr .cr-turn{grid-template-columns:minmax(0,1fr);gap:4px}
+  .nr .cr-turn-who{flex-direction:row;gap:8px;padding-top:0}
+  .nr .cr-stats{justify-content:flex-start}
+}

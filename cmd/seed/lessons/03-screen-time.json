@@ -1,0 +1,36 @@
+{
+  "title": "Screen time",
+  "lang": "english",
+  "level": "B1",
+  "source_kind": "text",
+  "refined_text": "Most teenagers spend several hours a day looking at screens. They chat with friends, watch videos, play games and do their homework online. Although phones and laptops make life easier, many parents are worried about how much time their children spend on them.\n\nScientists say that too much screen time can affect your sleep. The light from a phone tells your brain that it is still daytime, so it is harder to fall asleep. That is why doctors advise putting your phone away at least an hour before bed.\n\nHowever, screens are not only a problem. You can learn a language, find information for a project or keep in touch with relatives who live far away. In my opinion, the important thing is balance. If I had more free time, I would spend it outside with my friends, not in front of a screen.\n\nSome families have simple rules: no phones at dinner, and one day a week without social media. Have you ever tried a day without your phone?",
+  "frank_text": "Большинство подростков проводят у экранов по несколько часов в день. Они переписываются с друзьями, смотрят видео, играют в игры и делают домашние задания онлайн. Хотя телефоны и ноутбуки облегчают жизнь, многие родители беспокоятся о том, сколько времени дети на них тратят.\n\nУчёные говорят, что слишком долгое время у экрана может влиять на сон. Свет от телефона сообщает мозгу, что ещё день, поэтому труднее заснуть. Вот почему врачи советуют убирать телефон как минимум за час до сна.\n\nОднако экраны — не только проблема. С их помощью можно выучить язык, найти информацию для проекта или поддерживать связь с родственниками, которые живут далеко. По-моему, главное — баланс. Если бы у меня было больше свободного времени, я бы проводил его на улице с друзьями, а не перед экраном.\n\nВ некоторых семьях есть простые правила: никаких телефонов за ужином и один день в неделю без соцсетей. Ты когда-нибудь пробовал провести день без телефона?",
+  "lexicon": [
+    {"phrase": "spend time on", "translation": "тратить время на", "origin": "teacher"},
+    {"phrase": "fall asleep", "translation": "заснуть", "origin": "teacher"},
+    {"phrase": "keep in touch with", "translation": "поддерживать связь с", "origin": "teacher"},
+    {"phrase": "in my opinion", "translation": "по-моему", "origin": "teacher"},
+    {"phrase": "although", "translation": "хотя", "origin": "teacher"},
+    {"phrase": "If I had more free time, I would", "translation": "если бы у меня было больше свободного времени, я бы", "origin": "teacher"}
+  ],
+  "objectives": [
+    {"text": "Высказать мнение о времени у экрана и объяснить его"},
+    {"text": "Рассказать, что бы ты сделал в воображаемой ситуации"}
+  ],
+  "avatar": {
+    "saved": true,
+    "role_prompt": "Ты ведущий школьного подкаста о здоровых привычках. Ты берёшь у ученика интервью про телефоны и соцсети.",
+    "max_turns": 8,
+    "practice_phrases": ["spend time on", "keep in touch with", "in my opinion", "although"],
+    "practice_phrase_notes": [
+      "Сколько времени ученик проводит в телефоне и на что",
+      "С кем ученик общается онлайн",
+      "Мнение ученика о правилах для телефонов",
+      "Плюсы и минусы экранов в одном предложении"
+    ],
+    "practice_grammar": ["Второй тип условных предложений: If I had…, I would…"],
+    "practice_grammar_notes": ["Ученик представляет воображаемую ситуацию"],
+    "hint_enabled": true,
+    "dictionary_enabled": true
+  }
+}

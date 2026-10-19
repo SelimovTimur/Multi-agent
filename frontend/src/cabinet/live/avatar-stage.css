@@ -1,0 +1,80 @@
+/* Сцена аватара рядом с перепиской. Палитра — экрана разговора. */
+.avatar-dialog { display: grid; gap: 20px; }
+
+@media (min-width: 900px) {
+	.avatar-dialog {
+		grid-template-columns: minmax(0, 1fr) minmax(420px, 1.15fr);
+		align-items: start;
+		gap: 32px;
+	}
+	.avatar-dialog-stage { position: sticky; top: 24px; }
+}
+
+.avatar-stage {
+	position: relative;
+	isolation: isolate;
+	min-height: 320px;
+	overflow: hidden;
+	border-radius: 24px;
+	background-color: #dceadf;
+	background-image:
+		radial-gradient(circle at 78% 21%, #f5efe6 0 15%, transparent 16%),
+		linear-gradient(145deg, #c5dfc7 0%, #e7ebd7 53%, #ecdcc4 100%);
+}
+
+.avatar-stage canvas {
+	position: absolute;
+	z-index: 3;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.avatar-stage-backdrop {
+	position: absolute;
+	z-index: 0;
+	inset: 0;
+	background-position: center;
+	background-size: cover;
+	opacity: 0;
+	transition: opacity 320ms ease;
+}
+.avatar-stage-backdrop[data-loaded='true'] { opacity: 1; }
+
+.avatar-stage-fallback {
+	position: absolute;
+	z-index: 2;
+	top: 50%;
+	left: 50%;
+	width: min(78%, 420px);
+	max-height: 84%;
+	object-fit: contain;
+	transform: translate(-50%, -47%);
+}
+
+/* У сгенерированного фона горизонт выше ног, и без тени аватар висит
+   в воздухе. Показываем её только когда фон действительно загрузился. */
+.avatar-stage-shadow {
+	position: absolute;
+	z-index: 2;
+	bottom: 21%;
+	left: 50%;
+	width: 26%;
+	height: 4.5%;
+	border-radius: 50%;
+	background: radial-gradient(ellipse at center, rgb(90 80 60 / 26%) 0%, rgb(90 80 60 / 10%) 55%, transparent 72%);
+	opacity: 0;
+	transform: translateX(-50%);
+	transition: opacity 320ms ease;
+}
+.avatar-stage:has(.avatar-stage-backdrop[data-loaded='true']) .avatar-stage-shadow { opacity: 1; }
+
+@media (min-width: 900px) {
+	.avatar-stage { min-height: 420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avatar-stage-backdrop,
+	.avatar-stage-shadow { transition: none; }
+}

@@ -1,0 +1,451 @@
+/* ============================================================
+   lesson.css — экраны ученика: «Мои занятия», прохождение урока,
+   итог выдачи, «Результаты урока», «Мои ошибки» и повтор выражений
+   (docs/product/student-screens/story.md, макет «Экраны ученика»).
+
+   Из макета перенесены вёрстка и поведение: одна колонка-карточка
+   720 px (на телефоне во всю ширину), иконки этапов в шапке, свой фон
+   у каждого этапа с бледным узором из эчпочмаков, отклик на ответ,
+   звёзды. Вид — дизайн-система кабинета: кнопки, поля, карточки и
+   скругления из cabinet.css, цвета — его токены. Своих цветов здесь
+   только фоны этапов: по ним ученик узнаёт, где он в уроке.
+
+   Капсовые подписи макета («ТАТАРСКАЯ КУХНЯ», «ПРОПУСК 2 ИЗ 10»,
+   «ТЫ ВЫУЧИЛ») и нумерованные кружки у целей и правил намеренно не
+   перенесены: по правилам интерфейса подписи пишутся обычным
+   регистром, а нумерация остаётся только у настоящей
+   последовательности шагов. Вместо номеров — значок.
+
+   Все правила начинаются с .nr: файл подключается из экрана раньше
+   cabinet.css, и при равном весе дизайн-система перебивала бы их.
+   ============================================================ */
+
+/* ---------- каркас: карточка урока ---------- */
+
+/* Обёртка страницы: карточка под шапкой, а не посередине экрана — у неё
+   своя высота; на телефоне она во всю ширину, без полей. */
+.nr .auth-wrap.lk-wrap-flush{align-items:flex-start;padding-top:32px}
+.nr .lk-wrap{width:100%;display:flex;justify-content:center}
+
+.nr .lk{
+  --stage-bg:#FBF6EC;--stage-line:#EADFC9;
+  width:720px;max-width:100%;background:#fff;border:1px solid var(--green-line);
+  border-radius:16px;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 10px 30px rgba(31,41,51,.06);
+  /* Короткий шаг не сжимает карточку: «Дальше» стоит внизу, на одном
+     месте, а не прыгает от шага к шагу. */
+  min-height:min(720px,calc(100vh - 140px));min-height:min(720px,calc(100dvh - 140px));
+}
+/* Скругление держат края самой карточки: overflow:hidden у неё отключил
+   бы липкий низ с кнопками. */
+.nr .lk > :first-child{border-radius:15px 15px 0 0}
+.nr .lk > :last-child{border-radius:0 0 15px 15px}
+
+/* Фоны этапов: бумажный текст, голубоватые выражения, жёлтые упражнения,
+   зеленоватое правило, песочный разговор. */
+.nr .lk[data-stage="text"]{--stage-bg:#FBF6EC;--stage-line:#EADFC9}
+.nr .lk[data-stage="lexicon"]{--stage-bg:#EEF5FB;--stage-line:#CFE2F3}
+.nr .lk[data-stage="exercise"]{--stage-bg:#FFF8E6;--stage-line:#EFE3C4}
+.nr .lk[data-stage="grammar"]{--stage-bg:#F0F7F2;--stage-line:#CFE6D7}
+.nr .lk[data-stage="talk"]{--stage-bg:#F7F0E3;--stage-line:#E7D7B8}
+.nr .lk[data-stage="finish"]{--stage-bg:#FFF9EC;--stage-line:#EFE3C4}
+
+/* Шапка: название урока, где ученик, серия и выход. */
+.nr .lk-top{padding:22px 32px 12px;background:var(--bg)}
+.nr .lk-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.nr .lk-head-main{min-width:0}
+.nr .lk-head-main .auth-eyebrow{overflow-wrap:anywhere}
+.nr .lk-tools{display:flex;align-items:center;gap:8px;flex:none}
+
+/* Серия верных подряд: появляется с двух и растёт с «пульсом». */
+.nr .lk-streak{
+  display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;
+  background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn);
+  font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;
+  transform:scale(0);transition:transform .25s cubic-bezier(.3,1.6,.5,1);
+}
+.nr .lk-streak.is-on{transform:scale(1)}
+.nr .lk-streak.is-pop{animation:lk-pop .4s}
+@keyframes lk-pop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* Этапы урока: иконки вместо «шаг 7 из 12». */
+.nr .lk-stages{display:flex;align-items:center;margin-top:14px}
+.nr .lk-stage{
+  flex:none;width:34px;height:34px;border-radius:50%;padding:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;
+  background:#EFEBE4;border:2px solid transparent;cursor:pointer;position:relative;
+  transition:all .25s;filter:grayscale(1);opacity:.65;
+}
+.nr .lk-stage:disabled{cursor:default}
+.nr .lk-stage.is-done{background:var(--ok-08);border-color:var(--ok);filter:none;opacity:1}
+.nr .lk-stage.is-done::after{
+  content:'✓';position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;
+  background:var(--green);color:#fff;font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.nr .lk-stage.is-cur{
+  width:42px;height:42px;font-size:20px;background:#fff;border-color:var(--green);
+  filter:none;opacity:1;box-shadow:0 0 0 4px var(--green-08);
+}
+.nr .lk-stage:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .lk-seg{flex:1;height:3px;background:#E4DED4;margin:0 3px;border-radius:2px;overflow:hidden}
+.nr .lk-seg i{display:block;height:100%;background:var(--green);transition:width .35s}
+.nr .lk-stage-label{text-align:center;font-size:12px;font-weight:600;color:var(--green);margin-top:6px;min-height:15px}
+
+/* Тело шага: фон этапа и узор из эчпочмаков, как обои в Телеграме. */
+.nr .lk-body{
+  flex:1;padding:22px 32px 24px;
+  background-color:var(--stage-bg);background-image:url('/avatar/echpochmak-wall.svg');
+  background-size:260px 260px;border-top:1px solid var(--stage-line);
+  transition:background-color .35s;
+}
+/* Без шапки (главная) тело — верх карточки: своей линии сверху ему не нужно. */
+.nr .lk > .lk-body:first-child{border-top:0}
+.nr .lk-body.is-enter{animation:lk-enter .3s ease-out}
+@keyframes lk-enter{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+
+/* Низ: «←» и «Дальше». Липкий: на телефоне длинное упражнение не уводит
+   кнопку под сгиб. */
+.nr .lk-foot{
+  position:sticky;bottom:0;z-index:5;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 32px 18px;background:var(--bg);border-top:1px solid var(--hair);
+}
+.nr .lk-foot .btn-primary{min-width:240px}
+
+/* ---------- общие кусочки ---------- */
+
+.nr .lk-sub{font-size:13px;color:var(--ink-60);line-height:1.45;margin-top:8px}
+.nr .lk-row-hi{display:flex;align-items:center;gap:14px}
+.nr .avatar-pic.lk-avatar{border-radius:50%;border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.nr .lk-center{text-align:center}
+.nr .lk-center .avatar-pic{display:block;margin:0 auto}
+.nr .lk-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:16px}
+.nr .lk-actions .btn{min-width:280px}
+.nr .lk-tag{
+  display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--tan);
+  border-radius:2px;padding:6px 10px;font-size:14px;font-weight:600;line-height:1.3;
+}
+.nr .lk-tag.is-green{background:var(--green-08);border-color:var(--green-28);color:var(--green-dark)}
+.nr .lk-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.nr .lk-label{font-size:13px;font-weight:700;color:var(--warn)}
+
+/* Отклик на ответ: верное подпрыгивает, неверное трясётся. */
+.nr .lk-bounce{animation:lk-bounce .45s}
+@keyframes lk-bounce{0%,100%{transform:none}35%{transform:scale(1.06)}65%{transform:scale(.98)}}
+.nr .lk-shake{animation:lk-shake .4s}
+@keyframes lk-shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+
+/* Плашка Ишки после верного ответа. Над нижними кнопками экрана, а не
+   внутри карточки: длинное упражнение уводило бы её за край. */
+.nr .lk-cheer{
+  position:fixed;left:50%;bottom:96px;z-index:58;width:min(360px,calc(100vw - 32px));
+  display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;
+  padding:10px 14px 10px 10px;box-shadow:0 12px 32px rgba(0,0,0,.18);
+  transform:translate(-50%,24px);opacity:0;visibility:hidden;pointer-events:none;
+  transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .2s,visibility .35s;
+}
+.nr .lk-cheer.is-on{transform:translate(-50%,0);opacity:1;visibility:visible}
+/* На компьютере — у правого края карточки, как в макете: 720 px по центру,
+   плашка 360 px с отступом 24 px от края. */
+@media (min-width:768px){
+  .nr .lk-cheer{left:calc(50% - 24px);transform:translate(0,24px)}
+  .nr .lk-cheer.is-on{transform:none}
+}
+.nr .lk-cheer b{display:block;font-size:16px}
+.nr .lk-cheer span{font-size:13px;color:var(--ink-60)}
+
+.nr .lk-confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:59}
+
+/* ---------- цели и текст ---------- */
+
+.nr .lk-goals{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.nr .lk-goal{
+  display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#fff;
+  border:1px solid var(--tan);border-radius:8px;font-size:15px;line-height:1.45;
+  animation:lk-enter .35s both;
+}
+.nr .lk-goal-mark{
+  flex:none;width:26px;height:26px;border-radius:50%;background:var(--green-08);color:var(--green);
+  display:flex;align-items:center;justify-content:center;
+}
+
+.nr .lk-reading{
+  font-size:17px;line-height:1.75;background:#FFFDF7;border:1px solid var(--stage-line);
+  border-radius:8px;padding:18px;box-shadow:0 2px 0 var(--stage-line);margin-top:16px;
+}
+.nr .lk-reading p{margin:0}
+.nr .lk-reading p + p{margin-top:12px}
+.nr .lk-reading .lk-fr{display:block;font-size:14px;color:var(--ink-60);line-height:1.5;margin:2px 0 10px}
+.nr .lk-reading .lk-frank{white-space:pre-line}
+
+/* ---------- карточки выражений ---------- */
+
+.nr .lk-flip-wrap{perspective:1000px;margin:16px auto 0;max-width:520px;touch-action:pan-y}
+.nr .lk-flip{
+  position:relative;display:block;width:100%;height:220px;padding:0;border:0;background:none;
+  transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,1.2,.5,1);cursor:pointer;
+  font:inherit;color:inherit;
+}
+.nr .lk-flip.is-on{transform:rotateY(180deg)}
+.nr .lk-flip.is-in{animation:lk-enter .3s ease-out}
+.nr .lk-flip:focus-visible{outline:2px solid var(--green);outline-offset:4px;border-radius:8px}
+.nr .lk-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 24px;text-align:center;
+}
+.nr .lk-face.is-front{background:#fff;border:1px solid var(--stage-line);box-shadow:0 6px 0 var(--stage-line)}
+.nr .lk-face.is-back{background:var(--green);color:#fff;transform:rotateY(180deg);box-shadow:0 6px 0 var(--green-dark)}
+.nr .lk-face-ph{font-size:25px;font-weight:800;letter-spacing:-.01em;line-height:1.25}
+.nr .lk-face-tr{font-size:21px;font-weight:700;line-height:1.3}
+.nr .lk-face-hint{font-size:12px;opacity:.65;margin-top:14px}
+.nr .lk-slider{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px auto 0;max-width:520px}
+.nr .lk-dots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.nr .lk-dots i{width:7px;height:7px;border-radius:50%;background:var(--green-28);transition:all .2s}
+.nr .lk-dots i.is-on{width:20px;border-radius:4px;background:var(--green)}
+
+/* ---------- «Найди пары» ---------- */
+
+.nr .lk-match{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.nr .lk-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.nr .lk-tile{
+  min-height:50px;border-radius:6px;border:1.5px solid var(--tan);background:#fff;padding:9px 11px;
+  font-size:14px;font-weight:600;text-align:left;cursor:pointer;line-height:1.3;color:var(--ink);
+  transition:border-color .15s,background .15s,transform .15s,box-shadow .15s,opacity .15s;
+  overflow-wrap:anywhere;
+}
+.nr .lk-tile:hover:not(:disabled){border-color:var(--green-28)}
+.nr .lk-tile:disabled{cursor:default}
+.nr .lk-tile.is-pick{border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,41,51,.1);transform:translateY(-2px)}
+.nr .lk-tile.is-ok{background:var(--ok-08);border-color:var(--ok);color:var(--ok-dark)}
+.nr .lk-tile.is-bad{background:var(--err-bg);border-color:var(--err-line)}
+.nr .lk-tile.is-used{opacity:.35}
+/* Ответ без связи ждёт отправки (pending.js): не верно и не неверно, а «ещё
+   не знаем» — пунктир золотом, как текущий вопрос. */
+.nr .lk-tile.is-wait,.nr .lk-chip.is-wait,.nr .lk-cont.is-wait{border-style:dashed;border-color:var(--gold);background:var(--warn-bg)}
+.nr .lk-tile small.lk-wait{color:var(--warn)}
+.nr .lk-tile small{display:block;font-size:12px;font-weight:500;color:var(--err);margin-top:4px}
+
+/* ---------- вопросы по одному: пропуски и продолжение фразы ---------- */
+
+.nr .lk-qdots{display:flex;gap:4px;margin-top:14px}
+.nr .lk-qdots i{flex:1;height:6px;border-radius:3px;background:#EADFC2}
+.nr .lk-qdots i.is-ok{background:var(--ok)}
+.nr .lk-qdots i.is-bad{background:var(--err)}
+.nr .lk-qdots i.is-cur{background:var(--gold)}
+.nr .lk-qdots i.is-wait{background:var(--warn-line)}
+.nr .lk-qcard{
+  background:#fff;border-radius:8px;padding:20px 18px;margin-top:16px;
+  border:1px solid var(--stage-line);box-shadow:0 6px 0 var(--stage-line);
+}
+.nr .lk-qcard.is-in{animation:lk-enter .3s ease-out}
+.nr .lk-qtext{font-size:20px;font-weight:700;line-height:1.5;margin-top:8px}
+.nr .lk-gap{
+  display:inline-block;min-width:96px;padding:0 6px;border-bottom:3px dashed var(--gold);
+  text-align:center;border-radius:4px;transition:all .2s;
+}
+.nr .lk-gap.is-filled{color:var(--green-dark);background:var(--green-08);border-bottom:3px solid var(--green)}
+.nr .lk-gap.is-small{min-width:0}
+.nr .lk-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.nr .lk-chip{
+  border:1.5px solid var(--tan);background:#fff;border-radius:6px;padding:10px 13px;font-size:15px;
+  font-weight:700;cursor:pointer;color:var(--ink);box-shadow:0 3px 0 var(--tan);
+  transition:border-color .15s,transform .15s,opacity .15s;
+}
+.nr .lk-chip:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
+.nr .lk-chip:disabled{cursor:default}
+.nr .lk-chip.is-ok{background:var(--ok-08);border-color:var(--ok);color:var(--ok-dark);box-shadow:0 3px 0 var(--ok)}
+.nr .lk-chip.is-bad{background:var(--err-bg);border-color:var(--err);color:var(--err);box-shadow:0 3px 0 var(--err)}
+.nr .lk-chip.is-dim{opacity:.35}
+.nr .lk-lead{
+  display:inline-block;background:#FFF4D6;border-radius:14px 14px 14px 4px;padding:12px 16px;
+  font-size:19px;font-weight:700;line-height:1.4;margin-top:12px;
+}
+.nr .lk-lead em{font-style:normal;color:var(--green-dark)}
+.nr .lk-conts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.nr .lk-cont{
+  display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--tan);background:#fff;
+  border-radius:6px;padding:13px 14px;font-size:16px;font-weight:600;text-align:left;cursor:pointer;
+  line-height:1.35;color:var(--ink);transition:border-color .15s,opacity .15s;
+}
+.nr .lk-cont::before{content:'…';color:var(--gold);font-weight:800}
+.nr .lk-cont:hover:not(:disabled){border-color:var(--gold)}
+.nr .lk-cont:disabled{cursor:default}
+.nr .lk-cont.is-ok{background:var(--ok-08);border-color:var(--ok);color:var(--ok-dark)}
+.nr .lk-cont.is-bad{background:var(--err-bg);border-color:var(--err);color:var(--err)}
+.nr .lk-cont.is-dim{opacity:.4}
+.nr .lk-feedback{margin-top:14px;font-size:15px;font-weight:600;min-height:22px;color:var(--green)}
+.nr .lk-feedback.is-wait{color:var(--warn);font-weight:500}
+.nr .lk-offline{margin:0 0 14px;padding:10px 12px;border-radius:8px;border:1px solid var(--warn-line);
+  background:var(--warn-bg);color:var(--warn);font-size:14px;line-height:1.45}
+.nr .lk-review{display:flex;gap:10px;margin-top:12px}
+
+/* ---------- правило ---------- */
+
+.nr .lk-rule{background:#fff;border-radius:8px;border:1px solid var(--stage-line);margin-top:12px}
+.nr .lk-rule summary{
+  list-style:none;cursor:pointer;padding:14px 16px;display:flex;gap:12px;align-items:center;
+  font-weight:700;font-size:16px;
+}
+.nr .lk-rule summary::-webkit-details-marker{display:none}
+.nr .lk-rule summary::after{content:'▾';margin-left:auto;color:var(--ink-45);transition:transform .2s}
+.nr .lk-rule[open] summary::after{transform:rotate(180deg)}
+.nr .lk-rule-mark{
+  flex:none;width:28px;height:28px;border-radius:6px;background:var(--green-08);color:var(--green);
+  display:flex;align-items:center;justify-content:center;
+}
+.nr .lk-rule-in{padding:0 16px 16px}
+.nr .lk-rule-note{background:var(--green-08);border-radius:6px;padding:12px 14px;font-size:14px;line-height:1.55;white-space:pre-line}
+.nr .lk-ex{
+  display:flex;justify-content:space-between;gap:10px;padding:9px 0;
+  border-bottom:1px dashed var(--green-28);font-size:15px;font-weight:600;
+}
+.nr .lk-ex:last-child{border-bottom:none}
+.nr .lk-ex span{color:var(--ink-60);font-size:13px;font-weight:500;text-align:right}
+.nr .lk-try{margin-top:12px;font-size:14px;line-height:1.5;color:var(--ink-70)}
+.nr .lk-try strong{color:var(--ink)}
+
+/* ---------- разговор ---------- */
+
+.nr .lk-talk-head{text-align:center;padding-top:6px}
+.nr .lk-talk-head .avatar-pic{display:block;margin:0 auto}
+.nr .lk-bubble{
+  display:inline-block;background:#fff;border-radius:14px;padding:12px 16px;font-size:15px;
+  font-weight:600;margin-top:12px;box-shadow:0 4px 14px rgba(0,0,0,.06);line-height:1.45;
+}
+.nr .lk-topic{color:var(--green-dark);background:var(--green-08);border-radius:4px;padding:0 5px}
+.nr .lk-use{background:#fff;border-radius:8px;border:1px solid var(--stage-line);padding:16px;margin-top:16px}
+.nr .lk-gram{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.nr .lk-gram div{display:flex;gap:10px;align-items:baseline;font-size:14px;font-weight:700;flex-wrap:wrap}
+.nr .lk-gram div span{font-weight:500;color:var(--ink-60)}
+.nr .lk-talked{background:#fff;border-radius:8px;border:2px solid var(--green);padding:16px;margin-top:16px;text-align:center}
+.nr .btn-gold{background:var(--gold);color:#fff}
+.nr .btn-gold:hover{background:#bd9243;color:#fff}
+
+/* ---------- итог выдачи и результаты ---------- */
+
+.nr .lk-finish{text-align:center;padding-top:6px}
+.nr .lk-finish .avatar-pic{display:block;margin:0 auto}
+.nr .lk-stars{
+  display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:8px;
+  margin:14px auto 0;max-width:560px;
+}
+.nr .lk-star{background:#fff;border:1px solid var(--stage-line);border-radius:8px;padding:12px 6px;text-align:center}
+.nr .lk-star-s{
+  display:block;font-size:40px;line-height:1.1;filter:grayscale(1);opacity:.25;transform:scale(.6);
+  transition:all .4s cubic-bezier(.3,1.7,.5,1);
+}
+.nr .lk-star.is-on .lk-star-s{filter:none;opacity:1;transform:scale(1)}
+.nr .lk-star b{display:block;font-size:13px;margin-top:4px}
+.nr .lk-star .lk-star-note{display:block;font-size:12px;color:var(--ink-60);margin-top:3px;line-height:1.3}
+.nr .lk-star.is-miss .lk-star-note{color:var(--warn)}
+.nr .lk-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px auto 0;max-width:560px}
+.nr .lk-stat{background:#fff;border-radius:8px;padding:12px;border:1px solid var(--stage-line)}
+.nr .lk-stat b{display:block;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.nr .lk-stat span{font-size:12px;color:var(--ink-60)}
+.nr .lk-mist{
+  width:100%;max-width:560px;margin:14px auto 0;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;border:1px solid var(--err-line);background:#fff;border-radius:8px;padding:13px 14px;
+  font-weight:700;font-size:15px;cursor:pointer;color:var(--err);font-family:inherit;
+}
+.nr .lk-mist:hover{background:var(--err-bg)}
+.nr .lk-mist.is-none{border-color:var(--green-28);color:var(--green-dark);cursor:default;justify-content:center}
+.nr .lk-mist.is-none:hover{background:#fff}
+.nr .lk-note{font-size:13px;color:var(--ink-60);margin-top:16px;line-height:1.45}
+
+.nr .lk-box{background:#fff;border-radius:8px;border:1px solid var(--stage-line);padding:14px 16px;margin-top:14px}
+.nr .lk-box-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nr .lk-box-h b{font-size:15px}
+.nr .lk-box-h span{font-size:13px;font-weight:700;color:var(--warn);white-space:nowrap}
+.nr .lk-box .lk-stars{margin-top:12px}
+.nr .lk-closed-note{font-size:12px;color:var(--warn);margin-top:8px}
+.nr .lk-rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--hair)}
+.nr .lk-rrow:last-child{border-bottom:none}
+.nr .lk-rrow-nm{flex:1;min-width:0;font-weight:700;font-size:14px}
+.nr .lk-rrow-nm .bar{margin-top:6px;height:6px}
+.nr .lk-rrow-v{font-weight:800;flex:none;font-size:14px;font-variant-numeric:tabular-nums}
+
+/* «Мои ошибки»: вопрос с верным ответом зелёным и «Твой ответ» красным. */
+.nr .lk-mist-h{font-size:13px;font-weight:700;color:var(--warn);margin-top:18px}
+.nr .lk-arow{background:#fff;border:1px solid var(--hair);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:15px;line-height:1.5}
+.nr .lk-arow-ok{color:var(--ok-dark);font-weight:700}
+.nr .lk-arow-bad{color:var(--err);font-size:14px;margin-top:4px}
+.nr .lk-arow.is-empty{text-align:center;color:var(--green-dark);font-weight:700}
+
+/* ---------- «Мои занятия» ---------- */
+
+.nr .lk-hi{display:flex;align-items:center;gap:12px}
+.nr .lk-wave{
+  width:56px;height:56px;border-radius:50%;object-fit:contain;background:#fff;padding:6px;flex:none;
+  border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+.nr .lk-total{
+  margin-left:auto;flex:none;background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:999px;
+  padding:6px 11px;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;
+}
+.nr .lk-sec{margin-top:22px}
+.nr .lk-sec-h{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;margin:0 0 10px}
+.nr .lk-sec-h small{font-weight:600;color:var(--ink-45);font-size:13px}
+.nr .lk-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;animation:lk-pulse 1.4s infinite}
+@keyframes lk-pulse{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5)}100%{box-shadow:0 0 0 10px rgba(var(--accent-rgb),0)}}
+.nr .lk-row{
+  width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--hair);
+  border-radius:8px;padding:14px;margin-bottom:8px;text-align:left;font:inherit;color:inherit;
+}
+.nr button.lk-row{cursor:pointer}
+.nr button.lk-row:hover{border-color:var(--green-28)}
+.nr .lk-row.is-now{border:2px solid var(--green);box-shadow:0 4px 0 var(--green-08)}
+.nr .lk-row-main{flex:1;min-width:0}
+.nr .lk-row-t{font-weight:800;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.nr .lk-row-m{font-size:13px;color:var(--ink-60);margin-top:3px;line-height:1.4}
+.nr .lk-row > .btn{flex:none}
+.nr .lk-due{color:var(--warn);font-weight:700}
+.nr .lk-ms{font-size:13px;filter:grayscale(1);opacity:.3}
+.nr .lk-ms.is-on{filter:none;opacity:1}
+.nr .lk-chev{color:var(--ink-45);font-size:22px;flex:none;margin-left:auto;line-height:1}
+.nr .lk-empty{font-size:13px;color:var(--ink-50);padding:6px 2px}
+.nr .lk-home-foot{margin-top:22px;text-align:center;font-size:14px}
+.nr .lk-home-foot button{background:none;border:none;padding:0;font:inherit;font-weight:600;color:var(--green);cursor:pointer}
+.nr .lk-home-foot button:hover{text-decoration:underline}
+
+/* ---------- компьютер и телефон ---------- */
+
+@media (min-width:640px){
+  /* На компьютере кнопки по своей ширине, а не во всю карточку. */
+  .nr .lk-body .btn-block{width:auto;min-width:280px}
+}
+
+@media (max-width:639px){
+  .nr .auth-wrap.lk-wrap-flush{padding:0}
+  .nr .lk{
+    border-radius:0;border-left:0;border-right:0;box-shadow:none;
+    min-height:calc(100vh - 53px);min-height:calc(100dvh - 53px);
+  }
+  .nr .lk > :first-child,.nr .lk > :last-child{border-radius:0}
+  .nr .lk-top{padding:18px 16px 10px}
+  .nr .lk-body{padding:16px 16px 20px}
+  .nr .lk-foot{padding:12px 16px 16px}
+  .nr .lk-foot .btn-primary{flex:1;min-width:0}
+  .nr .lk-actions .btn{width:100%;min-width:0}
+  .nr .lk-flip{height:220px}
+  .nr .lk-qtext{font-size:18px}
+  .nr .lk-cheer{bottom:88px}
+  .nr .lk-row{padding:12px}
+  .nr .lk-row > .btn{padding:9px 12px}
+}
+
+@media (min-width:640px){
+  .nr .lk-flip{height:260px}
+  .nr .lk-tile{font-size:15px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .nr .lk-dot,.nr .lk-bounce,.nr .lk-shake,.nr .lk-body.is-enter,.nr .lk-goal,.nr .lk-streak.is-pop,.nr .lk-flip.is-in,.nr .lk-qcard.is-in{animation:none}
+  .nr .lk-flip,.nr .lk-star-s,.nr .lk-cheer,.nr .lk-streak{transition:none}
+}
+
+/* Опрос после урока: смайлики крупнее обычных чипов — ребёнок попадает в
+   них пальцем с телефона. */
+.nr .fb-smiles{gap:12px}
+.nr .fb-smiles .chip{font-size:28px;line-height:1;padding:10px 16px}

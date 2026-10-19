@@ -1,0 +1,30 @@
+{
+  "title": "A school trip to London",
+  "lang": "english",
+  "level": "A2",
+  "source_kind": "text",
+  "refined_text": "Last spring our class went on a school trip to London. We travelled by train, and the journey took two hours. I sat next to my best friend Mia, and we played cards all the way.\n\nFirst we visited the Natural History Museum. I have never seen such a big dinosaur before! Then we had lunch in a park near the river. It was sunny, but it was quite windy too.\n\nAfter lunch we took a boat along the Thames. Our teacher told us about the old bridges, and we took a lot of photos. The most exciting part was the London Eye. From the top we could see the whole city.\n\nIn the evening we were very tired, but happy. On the train home Mia said, \"Next year I'm going to visit Edinburgh with my parents.\" I think I'm going to ask my parents too.",
+  "frank_text": "Прошлой весной наш класс ездил на школьную экскурсию в Лондон. Мы ехали на поезде, и дорога заняла два часа. Я сидел рядом с лучшей подругой Мией, и всю дорогу мы играли в карты.\n\nСначала мы пошли в Музей естествознания. Я никогда раньше не видел такого большого динозавра! Потом мы обедали в парке у реки. Было солнечно, но довольно ветрено.\n\nПосле обеда мы катались на теплоходе по Темзе. Учитель рассказывал нам о старых мостах, и мы сделали много фотографий. Самым захватывающим было колесо обозрения «Лондонский глаз». С самого верха был виден весь город.\n\nВечером мы очень устали, но были счастливы. В поезде по дороге домой Мия сказала: «В следующем году я собираюсь поехать в Эдинбург с родителями». Думаю, я тоже попрошу родителей.",
+  "lexicon": [
+    {"phrase": "go on a school trip", "translation": "поехать на школьную экскурсию", "origin": "teacher"},
+    {"phrase": "travel by train", "translation": "ехать на поезде", "origin": "teacher"},
+    {"phrase": "I have never seen", "translation": "я никогда не видел", "origin": "teacher"},
+    {"phrase": "take photos", "translation": "фотографировать", "origin": "teacher"},
+    {"phrase": "the most exciting part", "translation": "самое захватывающее", "origin": "teacher"},
+    {"phrase": "I'm going to", "translation": "я собираюсь", "origin": "teacher"}
+  ],
+  "objectives": [
+    {"text": "Рассказать о поездке в прошедшем времени"},
+    {"text": "Сказать, что ты никогда не делал, и о планах на будущее"}
+  ],
+  "avatar": {
+    "saved": true,
+    "role_prompt": "Ты гид из Лондона. Ты расспрашиваешь школьника о поездках и о том, что ему понравилось.",
+    "max_turns": 6,
+    "practice_phrases": ["travel by train", "I have never seen", "the most exciting part", "I'm going to"],
+    "practice_grammar": ["Past Simple для рассказа о поездке"],
+    "practice_grammar_notes": ["Ученик рассказывает о прошлом: We went…, We visited…"],
+    "hint_enabled": true,
+    "dictionary_enabled": true
+  }
+}

@@ -1,0 +1,211 @@
+/* ============================================================
+   conversation.css — разговор с аватаром (шаг урока): голосовой
+   разговор и ввод текстом.
+
+   Форма — из макетов «Экраны/»: реплика голосовым сообщением с
+   проигрывателем, окно доступа к микрофону. Голосовой разговор — те
+   же пузыри и кнопки: микрофон с кольцом громкости, фраза на проверке — светлой карточкой на стороне
+   ученика. Вид — дизайн-система
+   кабинета: только токены cabinet.css, обычный регистр подписей,
+   ровные цифры таймера через font-variant-numeric, а не моноширинный
+   шрифт. Подписи «АВАТАР» и «ВЫ» капсом из макета намеренно не
+   перенесены: стороны разговора и так различаются местом и цветом.
+
+   Все правила начинаются с .nr, как в lesson/lesson.css: файл
+   подключается из экрана раньше cabinet.css, и при равном весе
+   дизайн-система перебивала бы эти правила.
+   ============================================================ */
+
+/* Страница во всю доступную ширину. Сетка сцены и переписки сжималась по
+   содержимому, и колонка разговора прыгала вширь, когда появлялась панель
+   «Распознано» с рядом кнопок. */
+.nr .conv-page{width:100%;max-width:1180px}
+
+/* ---------- реплика аватара: голосовое сообщение ---------- */
+
+/* Ширина постоянная, а не по содержимому: у голосового сообщения текста нет,
+   и без неё пузырь сжимался до кнопки, а полоса прогресса пропадала. */
+.nr .conv-voice{width:min(440px,100%);display:flex;flex-direction:column;gap:10px;white-space:normal}
+.nr .conv-player{
+  display:flex;align-items:center;gap:12px;padding:8px 14px 8px 8px;
+  background:rgba(255,255,255,.65);border:1px solid var(--hair);border-radius:12px;
+}
+.nr .conv-play{
+  flex:none;width:40px;height:40px;border:0;border-radius:50%;
+  background:var(--green);color:#fff;display:grid;place-items:center;cursor:pointer;
+  transition:background .12s;
+}
+.nr .conv-play:hover:not(:disabled){background:var(--green-dark)}
+.nr .conv-play:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .conv-play:disabled{opacity:.55;cursor:not-allowed}
+.nr .conv-play .spinner{border-color:rgba(255,255,255,.35);border-top-color:#fff}
+.nr .conv-track{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.nr .conv-bar{height:6px;border-radius:3px;background:var(--green-08);overflow:hidden}
+.nr .conv-bar > i{display:block;height:100%;border-radius:3px;background:var(--green);transition:width .25s linear}
+.nr .conv-time{font-size:12px;color:var(--ink-50);font-variant-numeric:tabular-nums}
+
+/* «Повторить» и «Подсказка» видны сразу, а не по наведению, как у старого
+   «Повторить»: подсказка — главный выход для того, кто не расслышал, и на
+   телефоне наведения нет вовсе. */
+.nr .conv-tools{display:flex;flex-wrap:wrap;gap:6px}
+.nr .conv-tool{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;
+  border:1px solid var(--tan);border-radius:999px;background:#fff;
+  color:var(--ink-70);font:inherit;font-size:13px;font-weight:500;line-height:1.3;cursor:pointer;
+  transition:border-color .12s,color .12s;
+}
+.nr .conv-tool:hover:not(:disabled){border-color:var(--green);color:var(--green)}
+.nr .conv-tool:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .conv-tool:disabled{opacity:.45;cursor:not-allowed}
+.nr .conv-tool[aria-expanded="true"]{border-color:var(--green-28);background:var(--green-08);color:var(--green)}
+.nr .conv-hint{display:flex;flex-direction:column;gap:4px;padding-top:10px;border-top:1px solid var(--hair)}
+.nr .conv-hint p{white-space:pre-wrap;overflow-wrap:anywhere}
+.nr .conv-hint-tr{font-size:14px;color:var(--ink-60)}
+.nr .conv-voice-note{font-size:12.5px;line-height:1.45;color:var(--warn)}
+
+/* ---------- ответ ученика ---------- */
+
+/* Ответ, который сервер ещё не подтвердил, бледнее отправленного. */
+.nr .bubble-student.conv-pending{opacity:.72}
+.nr .conv-status{align-self:flex-end;margin-top:-4px;font-size:12px;color:var(--ink-50)}
+.nr .conv-status-err{color:var(--err)}
+
+/* ---------- вступление ---------- */
+
+.nr .conv-intro{
+  margin-top:16px;padding:20px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  border:1px solid var(--green-08);border-radius:8px;background:var(--card-bg);
+  font-size:15px;line-height:1.6;
+}
+
+/* ---------- панель ответа ---------- */
+
+/* Панель не прилипает к низу экрана, как в макете: на телефоне она
+   закрывала бы текст реплики, открытый подсказкой или сбоем озвучки. До неё
+   экран прокручивает сам — после каждой реплики и смены панели. */
+.nr .conv-composer{
+  margin-top:12px;padding:16px 0 12px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  border-top:1px solid var(--hair);
+}
+.nr .conv-stack{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.nr .conv-caption{font-size:13px;line-height:1.5;color:var(--ink-60)}
+.nr .conv-notice{max-width:52ch;font-size:13px;line-height:1.5;color:var(--ink-60);text-align:center}
+
+.nr .conv-wait{display:flex;align-items:center;gap:10px}
+.nr .conv-panel-note{font-size:13px;line-height:1.5;color:var(--ink-60)}
+.nr .conv-field{min-height:72px}
+
+/* «Голосовой разговор недоступен»: причина, «Повторить», под ней — ввод
+   текстом. */
+.nr .conv-live-off{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;text-align:left}
+.nr .conv-live-off-text{flex:1 1 260px;display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.5}
+
+/* ---------- ответ текстом и «Повторить» ---------- */
+
+.nr .conv-text{width:100%;display:flex;flex-direction:column;gap:10px}
+.nr .conv-text .chat-input{align-items:flex-end}
+.nr .conv-text > .btn-ghost{align-self:center}
+.nr .conv-input{resize:vertical;min-height:var(--ctl-h);line-height:1.45}
+.nr .conv-send-err{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+
+/* ---------- окно доступа к микрофону ---------- */
+
+.nr .conv-mic{display:flex;flex-direction:column;align-items:center;text-align:center}
+.nr .conv-mic .auth-icon{margin-bottom:16px}
+.nr .conv-mic-text{max-width:36ch;font-size:17px;font-weight:700;line-height:1.4}
+
+/* ---------- конец разговора и итог ---------- */
+
+.nr .conv-closing{margin-top:16px;gap:10px}
+.nr .conv-summary{margin-top:16px;gap:18px}
+.nr .conv-sum-block{display:flex;flex-direction:column;gap:8px}
+.nr .conv-next{padding:14px 16px;border:1px solid var(--green-line);border-radius:8px;background:var(--green-08)}
+.nr .conv-example{font-weight:600;color:var(--green)}
+.nr .conv-sum-acts{display:flex;flex-wrap:wrap;gap:12px}
+
+/* ---------- живой режим: одна сессия, микрофон открыт ---------- */
+
+.nr .conv-intro-acts{display:flex;flex-wrap:wrap;gap:8px}
+.nr .conv-intro-length{display:flex;align-items:center;gap:8px;font-size:15px}
+.nr .conv-intro-note{font-size:13px;line-height:1.5;color:var(--ink-60)}
+
+/* Подсказка к «Осталось N ответов» на первых заходах: хвостик сверху
+   смотрит на счётчик. */
+.nr .conv-turns-hint{
+  position:relative;display:flex;align-items:flex-start;gap:12px;margin-top:10px;max-width:520px;
+  padding:10px 14px;border:1px solid var(--green-28);border-radius:8px;background:var(--card-bg);
+  font-size:13px;line-height:1.5;color:var(--ink);
+}
+.nr .conv-turns-hint::before{
+  content:'';position:absolute;top:-6px;left:22px;width:10px;height:10px;
+  background:var(--card-bg);border-top:1px solid var(--green-28);border-left:1px solid var(--green-28);
+  transform:rotate(45deg);
+}
+.nr .conv-turns-hint-ok{
+  flex:none;border:none;background:transparent;padding:0;font:inherit;font-weight:600;
+  color:var(--green);cursor:pointer;
+}
+.nr .conv-turns-hint-ok:hover{text-decoration:underline}
+
+/* Панель голосового разговора: кнопки записи нет, ученик просто говорит.
+   Кольцо вокруг микрофона дышит в такт его голосу. */
+.nr .conv-live{width:100%}
+.nr .conv-live-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.nr .conv-live-mic{position:relative;width:72px;height:72px;display:grid;place-items:center}
+.nr .conv-live-ring{
+  position:absolute;inset:0;border-radius:50%;background:var(--green-08);border:1px solid var(--green-28);
+  transform:scale(calc(1 + var(--level, 0) * .35));transition:transform .1s linear;
+}
+.nr .conv-live-dot{
+  position:relative;width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;
+  display:grid;place-items:center;box-shadow:0 8px 24px rgba(var(--accent-rgb),.18);
+}
+.nr .conv-live-mic.is-hearing .conv-live-ring{background:var(--green-28)}
+.nr .conv-live-mic.is-quiet .conv-live-dot{background:var(--ink-45);box-shadow:none}
+/* Кнопка «говорю»: выключенный микрофон — зелёный круг, который зовёт нажать;
+   включённый — с галочкой «договорил», кольцо дышит в такт голосу. */
+.nr .conv-live-mic-btn{padding:0;border:0;background:none;cursor:pointer;color:inherit;font:inherit}
+.nr .conv-live-mic-btn:not(.is-open):not(:disabled) .conv-live-dot{background:var(--green);box-shadow:0 8px 24px rgba(var(--accent-rgb),.18)}
+.nr .conv-live-mic-btn:disabled{cursor:default}
+.nr .conv-live-mic-btn:focus-visible{outline:2px solid var(--green);outline-offset:4px;border-radius:50%}
+.nr .conv-live-mic-btn:not(:disabled):hover .conv-live-dot{background:var(--green-dark)}
+
+/* Фраза, которую просим проверить: ещё не ответ, поэтому не зелёная, как
+   отправленные, а светлая карточка на стороне ученика. */
+.nr .conv-live-review{
+  align-self:flex-end;width:min(440px,92%);display:flex;flex-direction:column;gap:10px;
+  padding:14px 16px;border:1px solid var(--tan);border-radius:14px;border-bottom-right-radius:4px;background:#fff;
+}
+.nr .conv-live-text{font-size:16px;font-weight:500;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.nr .conv-live-review-acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+/* Полоса тает 20 секунд — столько текст ждёт ученика, потом уходит как есть. */
+.nr .conv-live-timer{height:3px;border-radius:2px;background:var(--green-08);overflow:hidden}
+.nr .conv-live-timer > i{display:block;height:100%;background:var(--green-28);transform-origin:left center;animation:conv-live-timer 20s linear forwards}
+@keyframes conv-live-timer{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+/* «Повторить» у ответа, который не дошёл до сервера. */
+.nr .conv-status-act{margin-left:8px;padding:2px 10px;font-size:12px}
+
+/* Реплика аватара в живом разговоре: вместо ▶ — полоски, они движутся,
+   пока реплика звучит. */
+.nr .conv-live-wave{flex:none;width:40px;height:40px;border-radius:50%;background:var(--green-08);display:flex;align-items:center;justify-content:center;gap:3px}
+.nr .conv-live-wave > i{width:3px;height:8px;border-radius:2px;background:var(--green)}
+.nr .conv-live-wave.is-on > i{animation:conv-live-wave .9s ease-in-out infinite}
+.nr .conv-live-wave.is-on > i:nth-child(2){animation-delay:.15s}
+.nr .conv-live-wave.is-on > i:nth-child(3){animation-delay:.3s}
+.nr .conv-live-wave.is-on > i:nth-child(4){animation-delay:.45s}
+.nr .conv-live-wave.is-on > i:nth-child(5){animation-delay:.6s}
+@keyframes conv-live-wave{0%,100%{height:6px}50%{height:18px}}
+
+@media (max-width:639px){
+  .nr .conv-sum-acts .btn{flex:1 1 100%}
+  .nr .conv-send-err .btn,.nr .conv-live-off .btn{flex:1 1 100%}
+  .nr .conv-live-acts .btn,.nr .conv-live-review-acts .btn,.nr .conv-intro-acts .btn{flex:1 1 100%}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .nr .conv-bar > i,.nr .conv-live-ring{transition:none}
+  .nr .conv-live-wave.is-on > i{animation:none;height:12px}
+  .nr .conv-live-timer > i{animation:none}
+}

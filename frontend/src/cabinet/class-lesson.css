@@ -1,0 +1,252 @@
+/* ============================================================
+   class-lesson.css — «Урок в классе» (docs/backend/class-lessons-api.md).
+
+   Экран выдачи заданий, метки на вкладке «Уроки» и история урока в
+   карточке ученика. Вид — из макета «экраны-урок-в-классе.html», токены —
+   из cabinet.css: своих цветов здесь почти нет.
+
+   Каждое правило начинается с .nr, и это не украшение. Файл подключается
+   из экранов, а значит, в сборке стоит раньше cabinet.css и Tailwind-сброса.
+   При равном весе побеждает тот, кто позже: сброс обнулял бы фон у кнопок
+   с type=button, а правила кабинета — наши отступы в таблице. Лишний класс
+   в селекторе выигрывает у обоих без !important.
+   ============================================================ */
+
+/* ---------- окно «Назначить урок»: «Задания пока закрыты» ---------- */
+.nr .cl-note{gap:4px;padding:16px 18px}
+.nr .cl-note p{font-size:12px;line-height:1.5;color:var(--ink-50)}
+
+/* ---------- точка «в сети» и «идёт урок» ---------- */
+.nr .cl-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);flex:none}
+/* Серая, а не красная: «не в сети» — не тревога, ребёнок мог просто не
+   открыть урок с телефона. */
+.nr .cl-dot.is-off{background:#ccc}
+.nr .cl-pulse{animation:cl-pulse 1.4s infinite}
+@keyframes cl-pulse{50%{opacity:.3}}
+/* Общий сброс анимаций в cabinet.css сжимает длительность до 0,01 мс, а
+   бесконечная анимация такой длины мигает. Отключаем её целиком. */
+@media (prefers-reduced-motion:reduce){ .nr .cl-pulse{animation:none} }
+
+/* «идёт урок» под счётчиком выданного на вкладке «Уроки» */
+.nr .cl-live-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--green)}
+.nr .cl-status{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+
+/* ---------- блок «Выдачи» ---------- */
+.nr .cl-issues{display:grid;gap:10px;margin-bottom:24px}
+.nr .cl-issue{
+  display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap;
+  border:1px solid var(--tan);border-left:4px solid var(--green);border-radius:6px;
+  background:#fff;padding:14px 16px;
+}
+/* Цвет кромки — способ выдачи: зелёный — на уроке, золотой — на дом,
+   серый — выдача закрыта и уже ничего не ждёт. */
+.nr .cl-issue.is-home{border-left-color:var(--gold)}
+.nr .cl-issue.is-done{border-left-color:#c9c9c9;background:var(--card-bg)}
+.nr .cl-issue-hd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nr .cl-issue-sub{font-size:12px;color:var(--ink-50);margin-top:4px}
+.nr .cl-issue-acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+/* Выбор нового срока встаёт отдельной строкой под выдачей, а не сбоку:
+   рядом с кнопками ему не хватает места уже на ноутбуке. */
+.nr .cl-issue > .cl-due{flex-basis:100%}
+
+/* ---------- две колонки: задания слева, класс справа ---------- */
+.nr .cl-live{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start}
+
+/* ---------- список «Задания урока» ---------- */
+.nr .cl-tasks{border:1px solid var(--tan);border-radius:6px;background:#fff;overflow:hidden}
+.nr .cl-tasks-hd{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:8px 14px;min-height:54px;border-bottom:1px solid var(--tan);
+}
+.nr .cl-task{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--hair);cursor:pointer}
+.nr .cl-task-list > .cl-task:last-child{border-bottom:none}
+.nr .cl-task input{margin-top:3px;width:16px;height:16px;accent-color:var(--green);flex:none;cursor:pointer}
+.nr .cl-task.is-sel{background:rgba(var(--accent-rgb),.04)}
+/* Выданное задание отметить нельзя — и курсор не должен обещать обратное. */
+.nr .cl-task.is-off,.nr .cl-task.is-off input{cursor:default}
+.nr .cl-task.is-off .cl-task-t{color:var(--ink-60)}
+.nr .cl-task-t{font-weight:600}
+.nr .cl-task-meta{font-size:12px;color:var(--ink-50);margin-top:2px}
+.nr .cl-task-badge{margin-top:6px}
+.nr .cl-actbar{
+  padding:14px;border-top:1px solid var(--tan);background:var(--card-bg);
+  display:flex;flex-direction:column;gap:10px;
+}
+
+/* ---------- выбор срока: на дом и продление ---------- */
+.nr .cl-due{border:1px solid var(--tan);border-radius:6px;background:#fff;padding:12px;display:flex;flex-direction:column;gap:10px}
+.nr .cl-due-l{font-size:13px;font-weight:600}
+.nr .cl-due .input{max-width:190px}
+
+/* ---------- таблица «Как проходит класс» ---------- */
+.nr .cl-board-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px}
+.nr .cl-ago{font-size:12px;color:var(--ink-50);font-variant-numeric:tabular-nums}
+.nr .cl-lost{color:var(--err);font-weight:600}
+/* Учеников и заданий бывает больше, чем влезает в ширину: таблица
+   прокручивается вбок внутри своей рамки, а не растягивает страницу. */
+.nr .cl-grid{border:1px solid var(--hair);border-radius:6px;background:#fff;overflow-x:auto}
+.nr .cl-grid table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
+.nr .cl-grid th,.nr .cl-grid td{
+  padding:10px;border-bottom:1px solid var(--hair);text-align:center;white-space:nowrap;vertical-align:middle;
+}
+/* Шапка столбца — «Задание 4» и под ним название. Без капса таблиц
+   кабинета: заглавными название упражнения не читается. */
+.nr .cl-grid th{font-size:11px;font-weight:600;color:var(--ink-45);vertical-align:bottom;text-transform:none;letter-spacing:0}
+.nr .cl-grid th small{display:block;max-width:96px;margin:2px auto 0;font-size:11px;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.nr .cl-grid tbody tr:last-child td{border-bottom:none}
+/* Имя ученика не уезжает при прокрутке вбок: без него клетка «2/5» —
+   неизвестно чья. Фон непрозрачный, иначе под именем проступают клетки. */
+.nr .cl-grid .cl-name{position:sticky;left:0;z-index:1;background:#fff;text-align:left}
+.nr .cl-grid tbody tr{cursor:pointer}
+.nr .cl-grid tbody tr:hover td{background:#FBF8F3}
+.nr .cl-grid tbody tr.is-on td{background:#F1F7F3}
+.nr .cl-grid tbody tr:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+.nr .cl-who{display:inline-flex;align-items:center;gap:6px}
+.nr .cl-grid td.cl-quiet{cursor:default;text-align:left;white-space:normal;color:var(--ink-50);font-size:13px}
+
+/* Клетка: цвет повторяет таблицу состояний из контракта. */
+.nr .cl-cell{
+  display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:30px;
+  padding:0 6px;border-radius:3px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;
+}
+.nr .cl-none{background:var(--hair);color:var(--ink-45)}
+.nr .cl-doing{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line)}
+.nr .cl-ok{background:var(--ok);color:#fff}
+/* Сделано, но верных меньше 70 %: заливка, а не рамка — задание закончено,
+   и это видно издалека, но разобрать его с учеником стоит. Цвета — из макета. */
+.nr .cl-mid{background:#E9C46A;color:#5a4410}
+.nr .cl-miss{background:var(--err-bg);color:var(--err);border:1px dashed var(--err-line)}
+
+.nr .cl-legend{display:flex;gap:8px 14px;flex-wrap:wrap;font-size:12px;color:var(--ink-60);margin-top:10px}
+.nr .cl-legend > span{display:inline-flex;align-items:center;gap:6px}
+.nr .cl-legend .cl-cell{min-width:28px;height:18px;font-size:10px}
+
+.nr .cl-empty{align-items:center;text-align:center;padding:48px 24px}
+
+/* ---------- панель ученика ---------- */
+/* Поверх экрана, без затемнения: таблица остаётся живой, и соседнего
+   ученика открывают прямо из неё, не закрывая панель. Выше липкой шапки
+   (40) и мобильного меню (45), ниже окон (50) и тостов (60). */
+.nr .cl-drawer{
+  position:fixed;top:0;right:0;bottom:0;z-index:46;width:420px;max-width:100%;
+  background:#fff;border-left:1px solid var(--tan);box-shadow:-8px 0 24px rgba(0,0,0,.06);
+  padding:24px;overflow-y:auto;
+}
+.nr .cl-drawer:focus{outline:none}
+.nr .cl-drawer-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.nr .cl-dtask{margin-top:18px}
+.nr .cl-dtask-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.nr .cl-ans{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--hair);font-size:13px}
+.nr .cl-ans > span:last-child{text-align:right}
+.nr .cl-ans-ok{color:var(--ok)}
+.nr .cl-ans-bad{color:var(--err)}
+
+/* ---------- карточка ученика: уроки класса и ответы ---------- */
+.nr .sc-summary{font-size:15px;line-height:1.55;color:var(--ink-70);max-width:80ch}
+.nr .sc-summary b{color:var(--ink);font-variant-numeric:tabular-nums}
+.nr .sc-lessons{border:1px solid var(--tan);border-radius:8px;background:#fff;overflow:hidden}
+.nr .sc-lesson{border-bottom:1px solid var(--hair)}
+.nr .sc-lesson:last-child{border-bottom:none}
+/* Строка урока — кнопка целиком: попасть в узкую стрелку справа на планшете
+   трудно, а раскрывать урок приходится десятки раз. */
+.nr .sc-lesson-hd{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  width:100%;padding:14px 18px;background:none;border:none;text-align:left;font:inherit;color:inherit;
+}
+.nr button.sc-lesson-hd{cursor:pointer}
+.nr button.sc-lesson-hd:hover,.nr .sc-lesson[data-open="true"] .sc-lesson-hd{background:var(--card-bg)}
+.nr button.sc-lesson-hd:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+.nr .sc-lesson-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--ink-45)}
+.nr .sc-lesson-body{padding:4px 18px 20px}
+/* Вкладки урока сразу под строкой: общий отступ .tabs рассчитан на шапку экрана. */
+.nr .sc-tabs{margin-top:0}
+
+/* ---------- аналитика класса: таблица «ученики × уроки» ---------- */
+/* Своя обёртка, а не .table-wrap: та на телефоне прячется в пользу карточек,
+   а таблицу результатов читают по столбцу, и на узком экране она
+   прокручивается вбок с закреплённым именем ученика. */
+.nr .ra-wrap{overflow-x:auto;border:1px solid var(--green-08);border-radius:8px;background:#fff}
+.nr .ra-table{border-collapse:separate;border-spacing:0;width:100%}
+.nr .ra-table th,.nr .ra-table td{padding:10px 12px;border-bottom:1px solid var(--hair);text-align:left;vertical-align:middle;white-space:nowrap}
+.nr .ra-table thead th{font-size:12px;font-weight:600;color:var(--ink-45);vertical-align:bottom}
+/* Общее .nr th рассчитано на шапку таблицы; имя ученика и «Класс» —
+   обычный текст строки. */
+.nr .ra-table tbody th,.nr .ra-table tfoot th{font-size:14px;font-weight:400;color:var(--ink)}
+.nr .ra-table tbody tr:last-child > *{border-bottom:none}
+/* Имя ученика остаётся на месте, пока столбцы уроков едут вбок. */
+.nr .ra-table tr > :first-child{position:sticky;left:0;z-index:1;background:#fff;border-right:1px solid var(--hair)}
+/* th в селекторе — чтобы перебить зелёный цвет ссылок из cabinet.css,
+   который подключается позже. */
+.nr .ra-table th a.t-name,.nr .ra-table th a.ra-lesson{color:var(--ink)}
+.nr .ra-table th a.t-name:hover,.nr .ra-table th a.ra-lesson:hover{color:var(--green)}
+.nr .ra-lesson{display:block;max-width:180px;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:13px;font-weight:700}
+.nr .ra-table td[data-active]{background:var(--card-bg)}
+/* Клетка — кнопка во всю ячейку: по ней кликают десятки раз подряд. */
+.nr .ra-cell{
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:32px;justify-content:center;
+  padding:0;background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;
+}
+.nr .ra-cell:hover .badge{filter:brightness(.96)}
+.nr .ra-cell:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.nr .ra-avg{font-variant-numeric:tabular-nums;color:var(--ink-70)}
+.nr .ra-table tfoot > tr > *{border-top:1px solid var(--hair);border-bottom:none;background:var(--card-bg);font-weight:600;color:var(--ink-60)}
+/* Панель клетки шире панели урока: в ней расшифровка разговора. */
+.nr .ra-drawer{width:560px}
+
+/* ---------- аналитика класса: страница урока ---------- */
+.nr .la-tile{gap:6px}
+.nr .la-num{font-size:30px;font-weight:900;letter-spacing:-.025em;line-height:1.15;font-variant-numeric:tabular-nums}
+.nr .la-num small{font-size:16px;font-weight:600;color:var(--ink-50);letter-spacing:0}
+.nr .la-pct{display:inline-flex;flex-direction:column;align-items:flex-start;gap:4px}
+.nr .la-mistakes{display:flex;flex-direction:column;gap:10px}
+.nr .la-mistake{display:flex;flex-direction:column;gap:2px}
+.nr .la-more{align-self:flex-start;background:none;border:none;padding:0;font:inherit;font-size:13px;color:var(--green);cursor:pointer}
+.nr .la-more:hover{text-decoration:underline}
+
+/* ---------- аналитика класса: что повторить (трудные слова) ---------- */
+/* Список строк, а не таблица: у строки есть раскрытие с ошибками учеников. */
+.nr .hw-list{border:1px solid var(--tan);border-radius:8px;background:#fff;overflow:hidden}
+.nr .hw{border-bottom:1px solid var(--hair)}
+.nr .hw:last-child{border-bottom:none}
+.nr .hw-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;width:100%;padding:16px 18px;background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.nr .hw-row:hover,.nr .hw[data-open] .hw-row{background:var(--card-bg)}
+.nr .hw-row:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+.nr .hw-word{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.nr .hw-sub{display:block;font-size:13px;color:var(--ink-60);margin-top:2px}
+.nr .hw-count{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.nr .hw-count b{font-size:16px;font-weight:800;color:var(--err);font-variant-numeric:tabular-nums}
+.nr .hw-more-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;padding:4px 18px 20px}
+.nr .hw-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.nr .hw-quote{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:4px;background:var(--bg);border:1px solid var(--hair)}
+.nr .hw-said{font-weight:600}
+.nr .hw-fix{color:var(--green);font-weight:600}
+.nr .hw-chips{display:flex;flex-wrap:wrap;gap:6px}
+.nr .hw-empty{padding:22px 18px;color:var(--ink-60)}
+.nr .hw-more{padding:8px 12px;border-top:1px solid var(--hair)}
+
+/* ============================================================
+   Адаптив
+   ============================================================ */
+
+/* Две колонки — пока таблице класса справа остаётся хотя бы 360 px: уже в
+   ней не помещаются имя ученика и пара клеток. Столбик включается дважды.
+   Сначала на узком ноутбуке, где ещё виден сайдбар; на 1023 px сайдбар
+   прячется, места справа снова хватает, и на планшете учитель видит
+   таблицу рядом со списком, а не в тысяче пикселей под ним. Второй раз —
+   на телефоне. */
+@media (min-width:1024px) and (max-width:1055px), (max-width:767px){
+  .nr .cl-live{grid-template-columns:minmax(0,1fr)}
+}
+
+@media (max-width:639px){
+  .nr .cl-issue{align-items:flex-start}
+  /* Время и состояние выдачи на телефоне уводим на отдельную строку,
+     чтобы заголовок и подробности не слипались при переносе. */
+  .nr .cl-issue-hd > span{flex-basis:100%}
+  .nr .cl-issue-acts{justify-content:flex-start}
+  /* Панель ученика на телефоне — во весь экран: 420 px шире самого экрана. */
+  .nr .cl-drawer,.nr .ra-drawer{width:100%;border-left:none;padding:18px 14px 28px}
+  .nr .sc-lesson-hd,.nr .sc-lesson-body{padding-left:14px;padding-right:14px}
+  .nr .hw-more-grid{grid-template-columns:minmax(0,1fr);padding-left:14px;padding-right:14px}
+  .nr .hw-row{padding-left:14px;padding-right:14px}
+}
